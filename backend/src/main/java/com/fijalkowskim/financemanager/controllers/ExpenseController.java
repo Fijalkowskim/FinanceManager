@@ -43,6 +43,23 @@ public class ExpenseController {
     public ResponseEntity<Expense> addExpense(@RequestBody ExpenseRequest expenseRequest){
         return ResponseEntity.status(HttpStatus.CREATED).body(expenseService.addExpense(expenseRequest));
     }
-
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> deleteExpense(@PathVariable long id){
+        try{
+            expenseService.deleteExpense(id);
+            return ResponseEntity.status(HttpStatus.OK).build();
+        }catch(Exception e){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+    }
+    @PatchMapping("/{id}")
+    public ResponseEntity<Expense> updateExpense(@PathVariable long id, @RequestBody ExpenseRequest expenseRequest){
+        try{
+            Expense expense = expenseService.updateExpense(id, expenseRequest);
+            return ResponseEntity.status(HttpStatus.OK).body(expense);
+        }catch(Exception e){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+    }
 
 }

@@ -43,4 +43,24 @@ public class ExpenseService {
         expenseRequest.getDescription().ifPresent(expense::setDescription);
         return expenseRepository.save(expense);
     }
+    public void deleteExpense (Long id)throws Exception{
+        Optional<Expense> expense = expenseRepository.findById(id);
+        if(expense.isEmpty()){
+            throw new Exception("Expense not found");
+        }
+        expenseRepository.delete(expense.get());
+    }
+    public Expense updateExpense(Long id, ExpenseRequest expenseRequest)throws Exception{
+        Optional<Expense> oldExpense = expenseRepository.findById(id);
+        if(oldExpense.isEmpty()){
+            throw new Exception("Expense not found");
+        }
+        Expense expense = new Expense();
+        expense.setId(oldExpense.get().getId());
+        expense.setDate(oldExpense.get().getDate());
+        expense.setCategory(expenseRequest.getCategory());
+        expense.setCost(expenseRequest.getCost());
+        expenseRequest.getDescription().ifPresent(expense::setDescription);
+        return expenseRepository.save(expense);
+    }
 }

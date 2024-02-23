@@ -7,7 +7,7 @@ import java.util.Optional;
 
 @Data
 public class ExpenseRequest {
-    private long cost;
+    private float cost;
     private String category;
     private Optional<String> description;
 }

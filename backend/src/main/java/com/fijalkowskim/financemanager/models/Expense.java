@@ -15,7 +15,7 @@ public class Expense {
     @Column(name="id")
     private long id;
     @Column(name="cost",nullable = false)
-    private long cost;
+    private float cost;
     @Column(name="category",nullable = false)
     private String category;
     @Column(name="description")

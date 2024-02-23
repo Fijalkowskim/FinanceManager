@@ -15,7 +15,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/expense")
+@RequestMapping("/api/expenses")
 @CrossOrigin("http://localhost:3000")
 public class ExpenseController {
     private ExpenseService expenseService;
@@ -25,10 +25,13 @@ public class ExpenseController {
     }
 
     @GetMapping("")
-    public Page<Expense> getExpenses(@RequestParam(name = "page", defaultValue = "0") int page,
-                                     @RequestParam(name = "pageSize", defaultValue = "20") int pageSize){
+    public Page<Expense> getExpenses(
+            @RequestParam(name = "page", defaultValue = "0") int page,
+            @RequestParam(name = "pageSize", defaultValue = "20") int pageSize,
+            @RequestParam(name = "sortDate", defaultValue = "desc") String sortDate)
+    {
         PageRequest pageRequest = PageRequest.of(page, pageSize);
-        return expenseService.getExpenses(pageRequest);
+        return expenseService.getExpenses(pageRequest, sortDate);
     }
     @GetMapping("/{id}")
     public ResponseEntity<Expense> getExpense(@PathVariable long id){
@@ -38,6 +41,27 @@ public class ExpenseController {
         }catch(Exception e){
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
+    }
+    @GetMapping("/monthly")
+    public Page<Expense> getExpensesForMonth(
+            @RequestParam(name = "year") int year,
+            @RequestParam(name = "month") int month,
+            @RequestParam(name = "page", defaultValue = "0") int page,
+            @RequestParam(name = "pageSize", defaultValue = "20") int pageSize){
+
+        PageRequest pageRequest = PageRequest.of(page, pageSize);
+
+        return expenseService.getExpensesForMonth(year, month, pageRequest);
+    }
+    @GetMapping("/yearly")
+    public Page<Expense> getExpensesForYear(
+            @RequestParam(name = "year") int year,
+            @RequestParam(name = "page", defaultValue = "0") int page,
+            @RequestParam(name = "pageSize", defaultValue = "20") int pageSize){
+
+        PageRequest pageRequest = PageRequest.of(page, pageSize);
+
+        return expenseService.getExpensesForYear(year, pageRequest);
     }
     @PostMapping("")
     public ResponseEntity<Expense> addExpense(@RequestBody ExpenseRequest expenseRequest){

@@ -6,5 +6,5 @@ html {
   scroll-behavior: smooth;
 }
 body {
-  @apply bg-background-50 font-primary;
+  @apply bg-background-100 font-primary font-light;
 }

@@ -25,8 +25,12 @@ public class ExpenseService {
     public ExpenseService(ExpenseRepository expenseRepository) {
         this.expenseRepository = expenseRepository;
     }
-     public Page<Expense> getExpenses(PageRequest pageRequest){
-        return expenseRepository.findAll(pageRequest);
+     public Page<Expense> getExpenses(PageRequest pageRequest, String sortDate){
+        if(sortDate.equals("asc")){
+            return expenseRepository.findAllByOrderByDateAsc(pageRequest);
+        }
+
+        return expenseRepository.findAllByOrderByDateDesc(pageRequest);
     }
     public Expense getExpense(Long id) throws Exception {
         Optional<Expense> expense = expenseRepository.findById(id);
@@ -34,6 +38,18 @@ public class ExpenseService {
             throw new Exception("Expense not found");
         }
         return expense.get();
+    }
+    public Page<Expense> getExpensesForMonth(int year, int month, Pageable pageable) {
+        LocalDateTime startOfMonth = LocalDateTime.of(year, month, 1, 0, 0);
+        LocalDateTime endOfMonth = startOfMonth.plusMonths(1).minusNanos(1);
+
+        return expenseRepository.findAllByDateBetweenOrderByDateDesc(startOfMonth, endOfMonth, pageable);
+    }
+    public Page<Expense> getExpensesForYear(int year, Pageable pageable) {
+        LocalDateTime startOfYear = LocalDateTime.of(year, 1, 1, 0, 0);
+        LocalDateTime endOfYear = startOfYear.plusYears(1).minusNanos(1);
+
+        return expenseRepository.findAllByDateBetweenOrderByDateDesc(startOfYear, endOfYear, pageable);
     }
     public Expense addExpense(ExpenseRequest expenseRequest) {
         Expense expense = new Expense();

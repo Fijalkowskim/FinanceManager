@@ -3,8 +3,8 @@ import { useSettingsContext } from "../../context/SettingsContext";
 import { AnimatePresence, motion, useInView } from "framer-motion";
 import { RxHamburgerMenu } from "react-icons/rx";
 import { GoX } from "react-icons/go";
-import CustomButton from "../general/CustomButton";
 import NavbarLink from "./NavbarLink";
+
 export interface NavlinkData {
   name: string;
   to: string;
@@ -39,6 +39,7 @@ function Navbar() {
         <p className="text-base -mb-3">Finance</p>
         <p className="text-primary-800">Manager</p>
       </div>
+
       <div
         className={`hidden flex-row items-center justify-end gap-8 lg:flex w-full`}
       >
@@ -75,7 +76,7 @@ function Navbar() {
               animate={{ x: 0 }}
               exit={{ x: 500 }}
               transition={{ duration: 0.1 }}
-              className="absolute right-0 top-0 flex h-full w-fit flex-col items-end gap-4 bg-primary-50 p-4 px-8 text-right text-2xl shadow-md"
+              className="absolute right-0 top-0 flex h-full w-fit flex-col items-end gap-4 bg-background-50 p-4 px-8 text-right text-2xl shadow-md"
             >
               <motion.button
                 className="cursor-pointer text-4xl"

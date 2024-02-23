@@ -1,6 +1,6 @@
 import React from "react";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
-import Homepage from "./pages/Homepage";
+import Dashboard from "./pages/Dashboard";
 import Navbar from "./components/navbar/Navbar";
 
 function App() {
@@ -9,7 +9,7 @@ function App() {
       <BrowserRouter>
         <Navbar />
         <Routes>
-          <Route path="/Finance-Manager" element={<Homepage />} />
+          <Route path="/Finance-Manager" element={<Dashboard />} />
           <Route path="*" element={<Navigate to="/Finance-Manager" />} />
         </Routes>
       </BrowserRouter>

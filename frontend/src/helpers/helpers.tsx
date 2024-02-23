@@ -15,3 +15,20 @@ export const compareDates = (date1: Date, date2: Date): boolean => {
     date1.getDate() === date2.getDate()
   );
 };
+export const dateToMonthName = (date: Date) => {
+  const monthNames = [
+    "January",
+    "Feburary",
+    "March",
+    "April",
+    "May",
+    "June",
+    "July",
+    "August",
+    "September",
+    "October",
+    "November",
+    "December",
+  ];
+  return monthNames[date.getMonth()];
+};

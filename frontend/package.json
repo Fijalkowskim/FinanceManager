@@ -15,6 +15,7 @@
     "chart.js": "^4.4.1",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.0",
+    "dateformat": "^5.0.3",
     "dotenv": "^16.4.5",
     "framer-motion": "^11.0.6",
     "react": "^18.2.0",

@@ -1,6 +1,9 @@
 package com.fijalkowskim.financemanager.services;
 
+import com.fijalkowskim.financemanager.models.CostPerCategory;
+import org.springframework.data.util.Pair;
 import com.fijalkowskim.financemanager.dao.ExpenseRepository;
+import com.fijalkowskim.financemanager.models.DashboardData;
 import com.fijalkowskim.financemanager.models.Expense;
 import com.fijalkowskim.financemanager.requestmodels.ExpenseRequest;
 import jakarta.transaction.Transactional;
@@ -10,11 +13,11 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.sql.Array;
 import java.sql.Date;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.NoSuchElementException;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 @Transactional
@@ -78,5 +81,45 @@ public class ExpenseService {
         expense.setCost(expenseRequest.getCost());
         expenseRequest.getDescription().ifPresent(expense::setDescription);
         return expenseRepository.save(expense);
+    }
+
+    public DashboardData getDashboardData(int year, int month) {
+
+        double monthlySpending = expenseRepository.calculateTotalSpendingForMonth(year, month);
+        Expense topExpense = expenseRepository.findTopExpenseForMonth(year, month);
+
+        Pair<List<CostPerCategory>,CostPerCategory> calculatedCategoriesData =  calculateCostsPerCategoryForMonth(year, month);
+        DashboardData dashboardData = new DashboardData();
+        dashboardData.setMonthlySpending(monthlySpending);
+        dashboardData.setCostsPerCategory(calculatedCategoriesData.getFirst());
+        dashboardData.setTopCategory(calculatedCategoriesData.getSecond());
+        dashboardData.setTopExpense(topExpense);
+
+
+        return dashboardData;
+    }
+    public Pair<List<CostPerCategory>,CostPerCategory> calculateCostsPerCategoryForMonth(int year, int month) {
+        List<Object[]> results = expenseRepository.calculateCostsPerCategoryForMonth(year, month);
+
+        List <CostPerCategory> costsPerCategory = new ArrayList<CostPerCategory>();
+        CostPerCategory topCategory = null;
+
+
+        for (Object[] result : results) {
+            String category = (String) result[0];
+            double totalCost = (Double) result[1];
+
+
+            CostPerCategory costPerCategory = new CostPerCategory();
+            costPerCategory.setCategory(category);
+            costPerCategory.setCost(totalCost);
+
+            if(topCategory == null || totalCost > topCategory.getCost()){
+                topCategory = costPerCategory;
+            }
+
+            costsPerCategory.add(costPerCategory);
+        }
+        return Pair.of(costsPerCategory,topCategory);
     }
 }

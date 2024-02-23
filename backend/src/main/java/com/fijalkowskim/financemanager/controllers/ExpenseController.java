@@ -1,5 +1,6 @@
 package com.fijalkowskim.financemanager.controllers;
 
+import com.fijalkowskim.financemanager.models.DashboardData;
 import com.fijalkowskim.financemanager.models.Expense;
 import com.fijalkowskim.financemanager.requestmodels.ExpenseRequest;
 import com.fijalkowskim.financemanager.services.ExpenseService;
@@ -83,6 +84,17 @@ public class ExpenseController {
             return ResponseEntity.status(HttpStatus.OK).body(expense);
         }catch(Exception e){
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+    }
+    @GetMapping("/dashboard")
+    public ResponseEntity<DashboardData> getDashboardData(
+            @RequestParam(name = "year") int year,
+            @RequestParam(name = "month") int month) {
+        try {
+            DashboardData dashboardData = expenseService.getDashboardData(year, month);
+            return ResponseEntity.status(HttpStatus.OK).body(dashboardData);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
     }
 

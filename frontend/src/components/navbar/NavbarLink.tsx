@@ -1,0 +1,38 @@
+import Reactfrom, { useEffect, useState } from "react";
+import { motion, useAnimation } from "framer-motion";
+import { cn } from "../../helpers/helpers";
+import { NavlinkData } from "./Navbar";
+import CustomButton from "../general/CustomButton";
+import { useLocation } from "react-router-dom";
+interface Props {
+  className?: string;
+  data: NavlinkData;
+}
+function NavbarLink({ data, className }: Props) {
+  const { pathname } = useLocation();
+  const [active, setActive] = useState(false);
+  useEffect(() => {
+    setActive(pathname === data.to);
+  }, [pathname, data.to]);
+  return (
+    <motion.a
+      href={data.to}
+      className={cn(
+        `group font-light relative w-fit flex-shrink-0 cursor-pointer transition-all ${
+          active && "text-primary-500"
+        } hover:text-primary-500 active:text-primary-600`,
+        className
+      )}
+      whileHover={{ scale: 1.02 }}
+      whileTap={{ scale: 1.01 }}
+    >
+      {data.button ? (
+        <CustomButton variant={"primary"}>{data.name}</CustomButton>
+      ) : (
+        data.name
+      )}
+    </motion.a>
+  );
+}
+
+export default NavbarLink;

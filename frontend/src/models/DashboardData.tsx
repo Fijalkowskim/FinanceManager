@@ -4,13 +4,13 @@ export interface DashboardData {
   monthlySpending: number;
   topCategory: {
     category: string;
-    spening: number;
+    cost: number;
   };
   topExpense: ExpenseResponseData;
   costPerCategory: [
     {
       category: string;
-      spending: number;
+      cost: number;
     }
   ];
 }

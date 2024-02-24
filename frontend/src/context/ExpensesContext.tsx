@@ -58,8 +58,8 @@ export function ExpensesContextProvider({
         const dashboard: DashboardData = {
           monthlySpending: res.data.monthlySpending,
           topCategory: {
-            category: res.data.topCategory.first,
-            spening: res.data.topCategory.second,
+            category: res.data.topCategory.category,
+            cost: res.data.topCategory.cost,
           },
           topExpense: res.data.topExpense,
           costPerCategory: res.data.costsPerCategory.map((cost: any) => ({

@@ -12,7 +12,7 @@ ChartJS.register(ArcElement, Tooltip, Legend);
 
 interface Props {
   title?: string;
-  costPerCategory?: [{ category: string; cost: number }];
+  costPerCategory: [{ category: string; cost: number }];
 }
 
 interface ChartDataWithDatasets extends ChartData<"pie", number[], unknown> {
@@ -34,35 +34,31 @@ const legendOptions = {
 function MonthChart({ title, costPerCategory }: Props) {
   const [chartData, setChartData] = useState<ChartDataWithDatasets>();
   useEffect(() => {
-    if (costPerCategory) {
-      const newData: ChartDataWithDatasets = {
-        labels: costPerCategory.map((cost) => cost.category),
-        datasets: [
-          {
-            label: "Cost in $",
-            data: costPerCategory.map((cost) => cost.cost),
-            backgroundColor: costPerCategory.map(
-              (cost) => GetCategoryData(cost.category).color
-            ),
-            borderColor: costPerCategory.map(
-              (cost) => GetCategoryData(cost.category).color
-            ),
-          },
-        ],
-      };
-      setChartData(newData);
-    }
+    const newData: ChartDataWithDatasets = {
+      labels: costPerCategory.map((cost) => cost.category),
+      datasets: [
+        {
+          label: "Cost in $",
+          data: costPerCategory.map((cost) => cost.cost),
+          backgroundColor: costPerCategory.map(
+            (cost) => GetCategoryData(cost.category).color
+          ),
+          borderColor: costPerCategory.map(
+            (cost) => GetCategoryData(cost.category).color
+          ),
+        },
+      ],
+    };
+    setChartData(newData);
   }, costPerCategory);
   return (
     <div className="aspect-square w-[9999px] lg:max-w-lg max-w-[100%] flex-shrink flex items-center justify-center">
-      {costPerCategory && chartData ? (
+      {chartData && (
         <Pie
           data={chartData}
           style={{ width: "100%", height: "100%" }}
           options={{ plugins: { legend: legendOptions } }}
         />
-      ) : (
-        <p>No data</p>
       )}
     </div>
   );

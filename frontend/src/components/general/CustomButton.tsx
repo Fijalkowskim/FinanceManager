@@ -24,6 +24,7 @@ const variants = cva(
 interface Props
   extends ButtonHTMLAttributes<HTMLButtonElement>,
     VariantProps<typeof variants> {
+  parentClass?: string;
   className?: string;
   children?: ReactNode;
   rounded?: boolean;
@@ -31,6 +32,7 @@ interface Props
 }
 
 function CustomButton({
+  parentClass,
   className,
   children,
   variant,
@@ -42,7 +44,7 @@ function CustomButton({
     <motion.button
       whileHover={disableScaleAnimation ? {} : { scale: 1.03 }}
       whileTap={disableScaleAnimation ? {} : { scale: 1.01 }}
-      className=""
+      className={cn("", parentClass)}
     >
       <button
         {...props}

@@ -10,6 +10,7 @@ interface ExpensesContextProviderProps {
 interface ExpensesContextProps {
   GetMontlyExpenses: (date: Date) => Promise<ExpenseData[]>;
   GetMontlyDashbord: (date: Date) => Promise<DashboardData | undefined>;
+  AddExpense: (cost: number, category: string, description: string) => void;
 }
 const ExpensesContext = createContext({} as ExpensesContextProps);
 
@@ -74,8 +75,25 @@ export function ExpensesContextProvider({
     }
     return undefined;
   };
+  const AddExpense = (cost: number, category: string, description: string) => {
+    const body = {
+      cost: cost,
+      category: category,
+      description: description,
+    };
+    api
+      .post("/expenses", body)
+      .then((res) => {
+        console.log(res);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
   return (
-    <ExpensesContext.Provider value={{ GetMontlyExpenses, GetMontlyDashbord }}>
+    <ExpensesContext.Provider
+      value={{ GetMontlyExpenses, GetMontlyDashbord, AddExpense }}
+    >
       {children}
     </ExpensesContext.Provider>
   );

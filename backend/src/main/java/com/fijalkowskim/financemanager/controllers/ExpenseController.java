@@ -66,6 +66,9 @@ public class ExpenseController {
     }
     @PostMapping("")
     public ResponseEntity<Expense> addExpense(@RequestBody ExpenseRequest expenseRequest){
+        if(expenseRequest.getCost() <= 0){
+            return  ResponseEntity.status((HttpStatus.BAD_REQUEST)).build();
+        }
         return ResponseEntity.status(HttpStatus.CREATED).body(expenseService.addExpense(expenseRequest));
     }
     @DeleteMapping("/{id}")

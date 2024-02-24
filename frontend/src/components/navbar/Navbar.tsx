@@ -11,9 +11,9 @@ export interface NavlinkData {
   button?: boolean;
 }
 const navlinks: NavlinkData[] = [
-  { name: "Add expense", to: "/Finance-Manager/dashboard", button: true },
+  { name: "Add expense", to: "/Finance-Manager/add", button: true },
   { name: "Dashboard", to: "/Finance-Manager" },
-  { name: "Monthly expenses", to: "/Finance-Manager/monthly-expenses" },
+  { name: "History", to: "/Finance-Manager/history" },
   { name: "Analize", to: "/Finance-Manager/analize" },
 ];
 

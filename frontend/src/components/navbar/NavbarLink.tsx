@@ -20,7 +20,7 @@ function NavbarLink({ data, className }: Props) {
       className={cn(
         `group font-light relative w-fit flex-shrink-0 cursor-pointer transition-all ${
           active && "text-primary-500"
-        } hover:text-primary-500 active:text-primary-600`,
+        }  `,
         className
       )}
       whileHover={{ scale: 1.02 }}

@@ -82,6 +82,9 @@ public class ExpenseController {
     }
     @PutMapping("/{id}")
     public ResponseEntity<Expense> updateExpense(@PathVariable long id, @RequestBody ExpenseRequest expenseRequest){
+        if(expenseRequest.getCost() <= 0){
+            throw new RuntimeException("Expense cost must be greater than 0.");
+        }
         try{
             Expense expense = expenseService.updateExpense(id, expenseRequest);
             return ResponseEntity.status(HttpStatus.OK).body(expense);

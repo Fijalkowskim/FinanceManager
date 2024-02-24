@@ -65,9 +65,9 @@ public class ExpenseController {
         return expenseService.getExpensesForYear(year, pageRequest);
     }
     @PostMapping("")
-    public ResponseEntity<Expense> addExpense(@RequestBody ExpenseRequest expenseRequest){
+    public ResponseEntity<Expense> addExpense(@RequestBody ExpenseRequest expenseRequest) throws RuntimeException{
         if(expenseRequest.getCost() <= 0){
-            return  ResponseEntity.status((HttpStatus.BAD_REQUEST)).build();
+            throw new RuntimeException("Expense cost must be greater than 0.");
         }
         return ResponseEntity.status(HttpStatus.CREATED).body(expenseService.addExpense(expenseRequest));
     }
@@ -80,7 +80,7 @@ public class ExpenseController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
     }
-    @PatchMapping("/{id}")
+    @PutMapping("/{id}")
     public ResponseEntity<Expense> updateExpense(@PathVariable long id, @RequestBody ExpenseRequest expenseRequest){
         try{
             Expense expense = expenseService.updateExpense(id, expenseRequest);

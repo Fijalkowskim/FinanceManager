@@ -6,22 +6,27 @@ import { useExpensesContext } from "../../context/ExpensesContext";
 import { ExpenseData } from "../../models/ExpenseData";
 import ExpenseCard from "./ExpenseCard";
 
+import { AllExpensesResponseData } from "../../models/AllExpensesResponseData";
+import PageNavigation from "./PageNavigation";
 function ExpensesHistory() {
   const [category, setCategory] = useState("All");
   const [sorting, setSorting] = useState<SortType>(SortType.DateDesc);
   const [expenses, setExpenses] = useState<ExpenseData[]>([]);
+  const [page, setPage] = useState(0);
+  const [totalPages, setTotalPages] = useState(0);
+  const [itemsPerPage, setItemsPerPage] = useState(20);
   const { GetExpenses } = useExpensesContext();
   useEffect(() => {
     const LoadExpenses = async () => {
-      console.log(sorting);
-      const data =
+      const data: AllExpensesResponseData =
         category === "All"
-          ? await GetExpenses(0, 20, sorting)
-          : await GetExpenses(0, 20, sorting, category);
-      setExpenses(data);
+          ? await GetExpenses(page, itemsPerPage, sorting)
+          : await GetExpenses(page, itemsPerPage, sorting, category);
+      setExpenses(data.expenses);
+      setTotalPages(data.totalPages);
     };
     LoadExpenses();
-  }, [GetExpenses, setExpenses, sorting, category]);
+  }, [GetExpenses, setExpenses, setTotalPages, sorting, category, page]);
   return (
     <div className="flex items-center justify-start flex-col gap-1 w-full">
       {/* Filters */}
@@ -46,6 +51,7 @@ function ExpensesHistory() {
             ))}
           </select>
         </div>
+
         <button
           onClick={() => {
             setSorting((prev) =>
@@ -81,11 +87,16 @@ function ExpensesHistory() {
           )}
         </button>
       </div>
+      {/* Filters end */}
+      <div className="-mt-3" />
+      <PageNavigation page={page} totalPages={totalPages} setPage={setPage} />
+      <div className="-mb-3" />
       <div className="flex flex-col justify-start items-center w-full gap-3 mt-4 ">
         {expenses.map((expense, idx) => (
           <ExpenseCard data={expense} key={idx} />
         ))}
       </div>
+      <PageNavigation page={page} totalPages={totalPages} setPage={setPage} />
     </div>
   );
 }

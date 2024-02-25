@@ -4,6 +4,7 @@ import api from "../api/api";
 import { ExpenseResponseData } from "../models/ExpenseResponseData";
 import { DashboardData } from "../models/DashboardData";
 import { SortType } from "../models/SortType";
+import { AllExpensesResponseData } from "../models/AllExpensesResponseData";
 
 interface ExpensesContextProviderProps {
   children: ReactNode;
@@ -16,7 +17,7 @@ interface ExpensesContextProps {
     pageSize: number,
     sortType: SortType,
     category?: string
-  ) => Promise<ExpenseData[]>;
+  ) => Promise<AllExpensesResponseData>;
   AddExpense: (cost: number, category: string, description: string) => void;
 }
 const ExpensesContext = createContext({} as ExpensesContextProps);
@@ -102,7 +103,7 @@ export function ExpensesContextProvider({
     pageSize: number,
     sortType: SortType,
     category?: string
-  ): Promise<ExpenseData[]> => {
+  ): Promise<AllExpensesResponseData> => {
     try {
       const res = await api.get(
         `/expenses?page=${page}&pageSize=${pageSize}${
@@ -129,12 +130,12 @@ export function ExpensesContextProvider({
             cost: data.cost,
           };
         });
-        return expenses;
+        return { expenses: expenses, totalPages: res.data.totalPages };
       }
     } catch (err) {
       console.log(err);
     }
-    return [];
+    return { expenses: [], totalPages: 0 };
   };
   return (
     <ExpensesContext.Provider

@@ -31,9 +31,9 @@ public class ExpenseControllerTest {
     @Test
     public void testGetExpenses() {
         PageRequest pageRequest = PageRequest.of(0, 20);
-        when(expenseService.getExpenses(pageRequest, "desc")).thenReturn(new PageImpl<>(Collections.emptyList()));
+        when(expenseService.getExpenses(pageRequest,null,"desc")).thenReturn(new PageImpl<>(Collections.emptyList()));
 
-        Page<Expense> result = expenseController.getExpenses(0, 20, "desc");
+        Page<Expense> result = expenseController.getExpenses(0, 20,null,null,  "desc");
 
         assertNotNull(result);
         assertEquals(0, result.getContent().size());

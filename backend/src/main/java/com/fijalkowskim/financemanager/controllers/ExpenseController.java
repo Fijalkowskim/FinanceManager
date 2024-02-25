@@ -29,10 +29,12 @@ public class ExpenseController {
     public Page<Expense> getExpenses(
             @RequestParam(name = "page", defaultValue = "0") int page,
             @RequestParam(name = "pageSize", defaultValue = "20") int pageSize,
+            @RequestParam(name = "category", required = false) String category,
+            @RequestParam(name = "sortCost", required = false) String sortCost,
             @RequestParam(name = "sortDate", defaultValue = "desc") String sortDate)
     {
         PageRequest pageRequest = PageRequest.of(page, pageSize);
-        return expenseService.getExpenses(pageRequest, sortDate);
+        return category == null ? expenseService.getExpenses(pageRequest,sortCost, sortDate) : expenseService.getExpensesForCategory(pageRequest,category,sortCost, sortDate);
     }
     @GetMapping("/{id}")
     public ResponseEntity<Expense> getExpense(@PathVariable long id){

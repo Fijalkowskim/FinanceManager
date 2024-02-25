@@ -28,12 +28,25 @@ public class ExpenseService {
     public ExpenseService(ExpenseRepository expenseRepository) {
         this.expenseRepository = expenseRepository;
     }
-     public Page<Expense> getExpenses(PageRequest pageRequest, String sortDate){
-        if(sortDate.equals("asc")){
-            return expenseRepository.findAllByOrderByDateAsc(pageRequest);
+     public Page<Expense> getExpenses(PageRequest pageRequest, String sortCost, String sortDate) throws RuntimeException{
+        if(sortCost != null){
+            if(sortCost.equals("asc")) return expenseRepository.findAllByOrderByCostAsc(pageRequest);
+            else if (sortCost.equals("desc")) return expenseRepository.findAllByOrderByCostDesc(pageRequest);
+            throw new RuntimeException("Bad cost sorting parameter.");
         }
-
-        return expenseRepository.findAllByOrderByDateDesc(pageRequest);
+        else if(sortDate.equals("desc")) return expenseRepository.findAllByOrderByDateDesc(pageRequest);
+        else if(sortDate.equals("asc")) return expenseRepository.findAllByOrderByDateAsc(pageRequest);
+        else throw new RuntimeException("Bad date sorting parameter.");
+    }
+    public Page<Expense> getExpensesForCategory(PageRequest pageRequest,String category, String sortCost, String sortDate) throws RuntimeException{
+        if(sortCost != null){
+            if(sortCost.equals("asc")) return expenseRepository.findAllByCategoryOrderByCostAsc(category,pageRequest);
+            else if (sortCost.equals("desc")) return expenseRepository.findAllByCategoryOrderByCostDesc(category,pageRequest);
+            throw new RuntimeException("Bad cost sorting parameter.");
+        }
+        else if(sortDate.equals("desc")) return expenseRepository.findAllByCategoryOrderByDateDesc(category,pageRequest);
+        else if(sortDate.equals("asc")) return expenseRepository.findAllByCategoryOrderByDateAsc(category,pageRequest);
+        else throw new RuntimeException("Bad date sorting parameter.");
     }
     public Expense getExpense(Long id) throws Exception {
         Optional<Expense> expense = expenseRepository.findById(id);

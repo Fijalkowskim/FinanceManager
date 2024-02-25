@@ -2,11 +2,11 @@ import { CategoryData } from "../models/CategoryData";
 import { MdOutlineLocalGroceryStore } from "react-icons/md";
 import { LuUtilityPole } from "react-icons/lu";
 import { MdEmojiTransportation } from "react-icons/md";
-import { GiHealthNormal } from "react-icons/gi";
 import { BsJoystick } from "react-icons/bs";
 import { GiClothes } from "react-icons/gi";
 import { GrMapLocation } from "react-icons/gr";
 import { CiCircleQuestion } from "react-icons/ci";
+import { GiLoveInjection } from "react-icons/gi";
 export const categories: CategoryData[] = [
   {
     name: "Groceries",
@@ -26,7 +26,7 @@ export const categories: CategoryData[] = [
   {
     name: "Healthcare",
     color: "#ed4e4e",
-    icon: <GiHealthNormal />,
+    icon: <GiLoveInjection />,
   },
   {
     name: "Entertainment",
@@ -40,7 +40,7 @@ export const categories: CategoryData[] = [
   },
   {
     name: "Travel",
-    color: "#e9ed6b",
+    color: "#b7bd46",
     icon: <GrMapLocation />,
   },
   {

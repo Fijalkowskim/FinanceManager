@@ -14,6 +14,7 @@ const navlinks: NavlinkData[] = [
   { name: "Add expense", to: "/Finance-Manager/add", button: true },
   { name: "Dashboard", to: "/Finance-Manager" },
   { name: "History", to: "/Finance-Manager/history" },
+  { name: "Planned", to: "/Finance-Manager/planned" },
   { name: "Analize", to: "/Finance-Manager/analize" },
 ];
 

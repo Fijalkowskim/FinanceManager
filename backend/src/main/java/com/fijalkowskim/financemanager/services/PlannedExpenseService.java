@@ -54,7 +54,7 @@ public class PlannedExpenseService {
         PlannedExpense expense = new PlannedExpense();
         expense.setCategory(expenseRequest.getCategory());
         expense.setCost(expenseRequest.getCost());
-        expense.setDate(LocalDateTime.now());
+        expense.setDate(expenseRequest.getDate());
         expenseRequest.getDescription().ifPresent(expense::setDescription);
         return plannedExpenseRepository.save(expense);
     }

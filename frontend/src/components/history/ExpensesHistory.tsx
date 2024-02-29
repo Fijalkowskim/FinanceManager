@@ -8,7 +8,17 @@ import ExpenseCard from "./ExpenseCard";
 
 import { AllExpensesResponseData } from "../../models/AllExpensesResponseData";
 import PageNavigation from "./PageNavigation";
-function ExpensesHistory() {
+import { usePlannedExpensesContext } from "../../context/PlannedExpenseContext";
+
+export enum ExpenseHistoryType {
+  Expenses,
+  PlannedExpenses,
+}
+interface Props {
+  type?: ExpenseHistoryType;
+}
+
+function ExpensesHistory({ type }: Props) {
   const [category, setCategory] = useState("All");
   const [sorting, setSorting] = useState<SortType>(SortType.DateDesc);
   const [expenses, setExpenses] = useState<ExpenseData[]>([]);
@@ -16,17 +26,22 @@ function ExpensesHistory() {
   const [totalPages, setTotalPages] = useState(0);
   const [itemsPerPage, setItemsPerPage] = useState(20);
   const { GetExpenses } = useExpensesContext();
+  const { GetPlannedExpenses } = usePlannedExpensesContext();
   useEffect(() => {
     const LoadExpenses = async () => {
       const data: AllExpensesResponseData =
         category === "All"
-          ? await GetExpenses(page, itemsPerPage, sorting)
+          ? type === ExpenseHistoryType.PlannedExpenses
+            ? await GetPlannedExpenses(page, itemsPerPage, sorting)
+            : await GetExpenses(page, itemsPerPage, sorting)
+          : type === ExpenseHistoryType.PlannedExpenses
+          ? await GetPlannedExpenses(page, itemsPerPage, sorting, category)
           : await GetExpenses(page, itemsPerPage, sorting, category);
       setExpenses(data.expenses);
       setTotalPages(data.totalPages);
     };
     LoadExpenses();
-  }, [GetExpenses, setExpenses, setTotalPages, sorting, category, page]);
+  }, [GetExpenses, setExpenses, setTotalPages, sorting, category, page, type]);
   return (
     <div className="flex items-center justify-start flex-col gap-1 w-full">
       {/* Filters */}

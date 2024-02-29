@@ -1,10 +1,10 @@
 import React from "react";
-import ExpenseForm from "../components/expense-form/ExpenseForm";
+import AddExpenseForm from "../components/add-expense/AddExpenseForm";
 
 function AddExpense() {
   return (
     <div className="min-h-screen flex items-start justify-center p-2 pt-20">
-      <ExpenseForm />
+      <AddExpenseForm />
     </div>
   );
 }

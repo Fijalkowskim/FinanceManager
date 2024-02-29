@@ -2,17 +2,28 @@ import React, { useState } from "react";
 import { categories } from "../../categories/Categories";
 import CustomButton from "../general/CustomButton";
 import { useExpensesContext } from "../../context/ExpensesContext";
+import MessagePopup from "../general/MessagePopup";
+import { AnimatePresence, motion } from "framer-motion";
 
-function ExpenseForm() {
+function AddExpenseForm() {
   const [cost, setCost] = useState("");
   const [description, setDescription] = useState("");
   const [category, setCategory] = useState(categories[0].name);
+  const [errorMessage, setErrorMessage] = useState("");
   const { AddExpense } = useExpensesContext();
+  const clearErrorMessage = () => {
+    setErrorMessage("");
+  };
   return (
-    <form
+    <motion.form
       onSubmit={(e) => {
         e.preventDefault();
-        if (cost === "" || category === "") return;
+        clearErrorMessage();
+        if (cost === "" || category === "" || parseFloat(cost) >= 10000) {
+          if (parseFloat(cost) >= 10000)
+            setErrorMessage("Expense cost must be below 10000$");
+          return;
+        }
         try {
           AddExpense(parseFloat(cost), category, description);
           setCost("");
@@ -22,12 +33,18 @@ function ExpenseForm() {
           console.log(err);
         }
       }}
+      layout
       className="bg-background-50 shadow-md  rounded-md p-5 flex flex-col items-center justify-center text-center max-w-sm w-full"
     >
       <h1 className="text-4xl font-extralight text-primary-700 mb-1">
         New expense
       </h1>
       <div className="w-full h-[0.1px] bg-primary-950/30 mb-2" />
+      <AnimatePresence>
+        {errorMessage !== "" && (
+          <MessagePopup message={errorMessage} setMessage={setErrorMessage} />
+        )}
+      </AnimatePresence>
       <label htmlFor="cost">Cost in $</label>
       <input
         min={0.01}
@@ -38,6 +55,7 @@ function ExpenseForm() {
         required
         value={cost}
         onChange={(e) => {
+          clearErrorMessage();
           const validated = e.target.value.match(/^(\d*\.{0,1}\d{0,2}$)/);
           if (validated) {
             setCost(e.target.value);
@@ -49,6 +67,7 @@ function ExpenseForm() {
       <select
         value={category}
         onChange={(e) => {
+          clearErrorMessage();
           setCategory(e.target.value);
         }}
         name="category"
@@ -66,6 +85,7 @@ function ExpenseForm() {
         rows={8}
         value={description}
         onChange={(e) => {
+          clearErrorMessage();
           setDescription(e.target.value);
         }}
         className="p-3 shadow-sm rounded-lg border border-gray-300 mb-2 w-full resize-none"
@@ -77,8 +97,8 @@ function ExpenseForm() {
       >
         Add
       </CustomButton>
-    </form>
+    </motion.form>
   );
 }
 
-export default ExpenseForm;
+export default AddExpenseForm;

@@ -4,7 +4,7 @@ USE finance_manager;
 DROP TABLE IF EXISTS expenses ;
 CREATE TABLE expenses (
                           id INT AUTO_INCREMENT PRIMARY KEY,
-                          cost FLOAT NOT NULL,
+                          cost DECIMAL(7,2) NOT NULL,
                           category VARCHAR(255) NOT NULL,
                           description VARCHAR(255),
                           date DATETIME NOT NULL
@@ -12,7 +12,7 @@ CREATE TABLE expenses (
 DROP TABLE IF EXISTS planned_expenses ;
 CREATE TABLE planned_expenses (
                           id INT AUTO_INCREMENT PRIMARY KEY,
-                          cost FLOAT NOT NULL,
+                          cost DECIMAL(7,2) NOT NULL,
                           category VARCHAR(255) NOT NULL,
                           description VARCHAR(255),
                           date DATETIME NOT NULL

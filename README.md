@@ -1,6 +1,9 @@
 
 # Finance Manager
-![image](https://github.com/Fijalkowskim/FinanceManager/assets/91847461/4d5bf77d-0b14-4c0e-9137-901afb3118b0)
+![image](https://github.com/Fijalkowskim/FinanceManager/assets/91847461/729ac597-41da-4cbc-9114-00630515e47f)
+![image](https://github.com/Fijalkowskim/FinanceManager/assets/91847461/c2abd5c1-3b2f-4814-ad21-f6a19c37ee94)
+![image](https://github.com/Fijalkowskim/FinanceManager/assets/91847461/7fe48ad6-7390-4085-a876-a7efe694c3c3)
+
 
 Finance Manager is a web application designed to help users manage their finances efficiently. The project consists of a backend developed in Spring Boot with Hibernate for data persistence and MySQL as the database, and a frontend built using React with TypeScript, Tailwind CSS, and Framer Motion.
 

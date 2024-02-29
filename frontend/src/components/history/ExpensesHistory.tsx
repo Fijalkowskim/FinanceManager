@@ -104,14 +104,19 @@ function ExpensesHistory({ type }: Props) {
       </div>
       {/* Filters end */}
       <div className="-mt-3" />
-      <PageNavigation page={page} totalPages={totalPages} setPage={setPage} />
+      {expenses.length > 0 && (
+        <PageNavigation page={page} totalPages={totalPages} setPage={setPage} />
+      )}
       <div className="-mb-3" />
       <div className="flex flex-col justify-start items-center w-full gap-3 mt-4 ">
         {expenses.map((expense, idx) => (
           <ExpenseCard data={expense} key={idx} />
         ))}
       </div>
-      <PageNavigation page={page} totalPages={totalPages} setPage={setPage} />
+      {expenses.length === 0 && <p>No expesnses yet</p>}
+      {expenses.length > 0 && (
+        <PageNavigation page={page} totalPages={totalPages} setPage={setPage} />
+      )}
     </div>
   );
 }

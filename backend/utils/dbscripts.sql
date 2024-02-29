@@ -71,4 +71,8 @@ VALUES
 INSERT INTO planned_expenses (cost, category, description, date)
 VALUES
     (40.50, 'Groceries', 'Grocery shopping', '2024-03-05'),
-    (25.00, 'Utilities', 'Electricity bill', '2024-04-10');
+    (25.00, 'Utilities', 'Electricity bill', '2024-04-10'),
+    (30.00, 'Transportation', 'Public transportation pass', '2024-05-01'),
+    (15.00, 'Healthcare', 'Prescription medication', '2024-03-05'),
+    (50.00, 'Entertainment', 'Movie night', '2024-01-28'),
+    (45.00, 'Clothing', 'Winter jacket', '2024-03-07');

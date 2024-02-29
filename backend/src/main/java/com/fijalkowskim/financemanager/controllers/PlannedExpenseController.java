@@ -3,6 +3,7 @@ package com.fijalkowskim.financemanager.controllers;
 import com.fijalkowskim.financemanager.models.DashboardData;
 import com.fijalkowskim.financemanager.models.Expense;
 import com.fijalkowskim.financemanager.models.PlannedExpense;
+import com.fijalkowskim.financemanager.models.PlannedExpensesDashboard;
 import com.fijalkowskim.financemanager.requestmodels.ExpenseRequest;
 import com.fijalkowskim.financemanager.requestmodels.PlannedExpenseRequest;
 import com.fijalkowskim.financemanager.services.ExpenseService;
@@ -71,5 +72,13 @@ public class PlannedExpenseController {
         }catch(Exception e){
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
+    }
+    @GetMapping("/dashboard")
+    public ResponseEntity<PlannedExpensesDashboard> getDashboardData(
+            @RequestParam(name = "daysFromNow") int daysFromNow,
+            @RequestParam(name = "amount") int amount) {
+            PlannedExpensesDashboard dashboardData = plannedExpenseService.getDashboardData(daysFromNow,amount);
+            return ResponseEntity.status(HttpStatus.OK).body(dashboardData);
+
     }
 }

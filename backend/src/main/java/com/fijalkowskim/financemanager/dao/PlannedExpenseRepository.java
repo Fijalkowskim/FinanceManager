@@ -23,5 +23,6 @@ public interface PlannedExpenseRepository extends JpaRepository<PlannedExpense, 
     Page<PlannedExpense> findAllByCategoryOrderByDateAsc(String category,Pageable pageable);
     Page<PlannedExpense> findAllByCategoryOrderByCostDesc(String category,Pageable pageable);
     Page<PlannedExpense> findAllByCategoryOrderByCostAsc(String category,Pageable pageable);
-    Page<PlannedExpense> findAllByDateBetweenOrderByDateDesc(LocalDateTime start, LocalDateTime end, Pageable pageable);
+    List<PlannedExpense> findAllByDateBetweenOrderByDateDesc(LocalDateTime start, LocalDateTime end, Pageable pageable);
+    List<PlannedExpense> findAllByDateBeforeOrderByDateAsc(LocalDateTime dateTime);
 }

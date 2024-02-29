@@ -6,6 +6,7 @@ import { DashboardData } from "../models/DashboardData";
 import { SortType } from "../models/SortType";
 import { AllExpensesResponseData } from "../models/AllExpensesResponseData";
 import dateFormat from "dateformat";
+import { PlannedExpensesData } from "../models/PlannedExpensesData";
 interface PlannedExpensesContextProviderProps {
   children: ReactNode;
 }
@@ -16,6 +17,10 @@ interface PlannedExpensesContextProps {
     sortType: SortType,
     category?: string
   ) => Promise<AllExpensesResponseData>;
+  GetPlannedExpensesDashboard: (
+    daysFromNow: number,
+    amount: number
+  ) => Promise<PlannedExpensesData>;
   AddPlannedExpense: (
     cost: number,
     category: string,
@@ -92,9 +97,43 @@ export function PlannedExpensesContextProvider({
     }
     return { expenses: [], totalPages: 0 };
   };
+  const GetPlannedExpensesDashboard = async (
+    daysFromNow: number,
+    amount: number
+  ): Promise<PlannedExpensesData> => {
+    try {
+      const res = await api.get(
+        `/planned_expenses/dashboard?daysFromNow=${daysFromNow}&amount=${amount}`
+      );
+      if (res.data) {
+        const expenses: ExpenseData[] = (
+          res.data.plannedExpenses as ExpenseResponseData[]
+        ).map((data) => {
+          return {
+            id: data.id,
+            category: data.category,
+            description: data.description,
+            date: new Date(data.date),
+            cost: data.cost,
+          };
+        });
+        return {
+          plannedExpenses: expenses,
+          totalPlannedExpenses: res.data.totalPlannedExpenses,
+        };
+      }
+    } catch (err) {
+      console.log(err);
+    }
+    return { plannedExpenses: [], totalPlannedExpenses: 0 };
+  };
   return (
     <PlannedExpensesContext.Provider
-      value={{ AddPlannedExpense, GetPlannedExpenses }}
+      value={{
+        AddPlannedExpense,
+        GetPlannedExpenses,
+        GetPlannedExpensesDashboard,
+      }}
     >
       {children}
     </PlannedExpensesContext.Provider>

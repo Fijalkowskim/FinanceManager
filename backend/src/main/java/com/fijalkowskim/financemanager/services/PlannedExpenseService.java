@@ -3,6 +3,7 @@ package com.fijalkowskim.financemanager.services;
 import com.fijalkowskim.financemanager.dao.PlannedExpenseRepository;
 import com.fijalkowskim.financemanager.models.Expense;
 import com.fijalkowskim.financemanager.models.PlannedExpense;
+import com.fijalkowskim.financemanager.models.PlannedExpensesDashboard;
 import com.fijalkowskim.financemanager.requestmodels.ExpenseRequest;
 import com.fijalkowskim.financemanager.requestmodels.PlannedExpenseRequest;
 import jakarta.transaction.Transactional;
@@ -12,6 +13,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.*;
 
 @Service
@@ -77,5 +79,15 @@ public class PlannedExpenseService {
         expense.setCost(expenseRequest.getCost());
         expenseRequest.getDescription().ifPresent(expense::setDescription);
         return plannedExpenseRepository.save(expense);
+    }
+    public PlannedExpensesDashboard getDashboardData(int daysFromNow, int amount){
+        LocalDateTime date = LocalDateTime.now()
+                .with(LocalTime.of(23, 59))
+                .plusDays(daysFromNow);
+        List<PlannedExpense> expenses = plannedExpenseRepository.findAllByDateBeforeOrderByDateAsc(date);
+        PlannedExpensesDashboard dashboardData = new PlannedExpensesDashboard();
+        dashboardData.setTotalPlannedExpenses(expenses.size());
+        dashboardData.setPlannedExpenses(expenses.subList(0, Math.min(amount, expenses.size())));
+        return dashboardData;
     }
 }

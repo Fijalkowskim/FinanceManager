@@ -9,6 +9,14 @@ CREATE TABLE expenses (
                           description VARCHAR(255),
                           date DATETIME NOT NULL
 );
+DROP TABLE IF EXISTS planned_expenses ;
+CREATE TABLE planned_expenses (
+                          id INT AUTO_INCREMENT PRIMARY KEY,
+                          cost FLOAT NOT NULL,
+                          category VARCHAR(255) NOT NULL,
+                          description VARCHAR(255),
+                          date DATETIME NOT NULL
+);
 
 -- 2022
 INSERT INTO expenses (cost, category, description, date)
@@ -57,3 +65,10 @@ VALUES
     (35.20, 'Clothing', 'New shirt', '2024-02-18'),
     (120.00, 'Travel', 'Planning a future trip', '2024-02-22'),
     (8.50, 'Other', 'Coffee with friends', '2024-02-12');
+
+-- Planned expenses
+
+INSERT INTO planned_expenses (cost, category, description, date)
+VALUES
+    (40.50, 'Groceries', 'Grocery shopping', '2024-03-05'),
+    (25.00, 'Utilities', 'Electricity bill', '2024-04-10');

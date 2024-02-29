@@ -42,7 +42,7 @@ function UpcomingExpenses() {
           )}
         </>
       ) : (
-        <div className="text-base text-primary-700">No planned expenses</div>
+        <div className="text-lg text-primary-700">No planned expenses</div>
       )}
       <NavLink to="/Finance-Manager/planned">
         <CustomButton variant={"primary"} parentClass="mt-2">

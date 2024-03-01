@@ -10,7 +10,8 @@ import java.util.Optional;
 public class PlannedExpenseRequest {
     private float cost;
     private String category;
-    private Optional<String> description;
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime date;
+    private Optional<String> description;
+
 }

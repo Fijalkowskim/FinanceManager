@@ -71,7 +71,7 @@ public class ExpenseService {
         Expense expense = new Expense();
         expense.setCategory(expenseRequest.getCategory());
         expense.setCost(expenseRequest.getCost());
-        expense.setDate(LocalDateTime.now());
+        expense.setDate(expenseRequest.getDate());
         expenseRequest.getDescription().ifPresent(expense::setDescription);
         return expenseRepository.save(expense);
     }

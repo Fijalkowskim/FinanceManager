@@ -7,6 +7,8 @@ import { SortType } from "../models/SortType";
 import { AllExpensesResponseData } from "../models/AllExpensesResponseData";
 import dateFormat from "dateformat";
 import { PlannedExpensesData } from "../models/PlannedExpensesData";
+import { ExpenseRequestData } from "../models/ExpenseRequestData";
+import { ResponseStatusData } from "../models/ResponseStatusData";
 interface PlannedExpensesContextProviderProps {
   children: ReactNode;
 }
@@ -23,11 +25,12 @@ interface PlannedExpensesContextProps {
     amount: number
   ) => Promise<PlannedExpensesData>;
   AddPlannedExpense: (
-    cost: number,
-    category: string,
-    description: string,
-    date: Date
-  ) => void;
+    expense: ExpenseRequestData
+  ) => Promise<ResponseStatusData>;
+  UpdatePlannedExpense: (
+    id: number,
+    expense: ExpenseRequestData
+  ) => Promise<ResponseStatusData>;
 }
 const PlannedExpensesContext = createContext({} as PlannedExpensesContextProps);
 
@@ -57,26 +60,28 @@ export function PlannedExpensesContextProvider({
     }
     return undefined;
   };
-  const AddPlannedExpense = (
-    cost: number,
-    category: string,
-    description: string,
-    date: Date
-  ) => {
+  const AddPlannedExpense = async (
+    expense: ExpenseRequestData
+  ): Promise<ResponseStatusData> => {
     const body = {
-      cost: cost,
-      category: category,
-      description: description,
-      date: dateFormat(date, "yyyy-mm-dd hh:MM:ss"),
+      cost: expense.cost,
+      category: expense.category,
+      description: expense.description,
+      date: dateFormat(expense.date, "yyyy-mm-dd hh:MM:ss"),
     };
-    api
-      .post("/planned_expenses", body)
-      .then((res) => {
-        console.log(res);
-      })
-      .catch((err) => {
-        console.log(err);
-      });
+    try {
+      const res = await api.post("/planned_expenses", body);
+      return {
+        status: res.status,
+        message: "Expense added",
+      } as ResponseStatusData;
+    } catch (err) {
+      console.log(err);
+    }
+    return {
+      status: 500,
+      message: "Something went wrong",
+    } as ResponseStatusData;
   };
   const GetPlannedExpenses = async (
     page: number,
@@ -147,6 +152,30 @@ export function PlannedExpensesContextProvider({
     }
     return { plannedExpenses: [], totalPlannedExpenses: 0 };
   };
+  const UpdatePlannedExpense = async (
+    id: number,
+    expense: ExpenseRequestData
+  ): Promise<ResponseStatusData> => {
+    const body = {
+      cost: expense.cost,
+      category: expense.category,
+      description: expense.description,
+      date: dateFormat(expense.date, "yyyy-mm-dd hh:MM:ss"),
+    };
+    try {
+      const res = await api.put(`/planned_expenses/${id}`, body);
+      return {
+        status: res.status,
+        message: "Expense updated",
+      } as ResponseStatusData;
+    } catch (err) {
+      console.log(err);
+    }
+    return {
+      status: 500,
+      message: "Something went wrong",
+    } as ResponseStatusData;
+  };
   return (
     <PlannedExpensesContext.Provider
       value={{
@@ -154,6 +183,7 @@ export function PlannedExpensesContextProvider({
         AddPlannedExpense,
         GetPlannedExpenses,
         GetPlannedExpensesDashboard,
+        UpdatePlannedExpense,
       }}
     >
       {children}

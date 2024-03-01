@@ -1,6 +1,7 @@
 package com.fijalkowskim.financemanager.services;
 
 import com.fijalkowskim.financemanager.models.CostPerCategory;
+import org.springframework.cglib.core.Local;
 import org.springframework.data.util.Pair;
 import com.fijalkowskim.financemanager.dao.ExpenseRepository;
 import com.fijalkowskim.financemanager.models.DashboardData;
@@ -71,7 +72,7 @@ public class ExpenseService {
         Expense expense = new Expense();
         expense.setCategory(expenseRequest.getCategory());
         expense.setCost(expenseRequest.getCost());
-        expense.setDate(expenseRequest.getDate());
+        expense.setDate(expenseRequest.getDate().withHour(LocalDateTime.now().getHour()).withMinute(LocalDateTime.now().getMinute()).withSecond(LocalDateTime.now().getSecond()));
         expenseRequest.getDescription().ifPresent(expense::setDescription);
         return expenseRepository.save(expense);
     }
@@ -89,7 +90,7 @@ public class ExpenseService {
         }
         Expense expense = new Expense();
         expense.setId(oldExpense.get().getId());
-        expense.setDate(oldExpense.get().getDate());
+        expense.setDate(expenseRequest.getDate().withHour(LocalDateTime.now().getHour()).withMinute(LocalDateTime.now().getMinute()).withSecond(LocalDateTime.now().getSecond()));
         expense.setCategory(expenseRequest.getCategory());
         expense.setCost(expenseRequest.getCost());
         expenseRequest.getDescription().ifPresent(expense::setDescription);

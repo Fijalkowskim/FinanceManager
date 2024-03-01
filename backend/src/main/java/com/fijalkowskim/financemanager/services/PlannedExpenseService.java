@@ -56,7 +56,7 @@ public class PlannedExpenseService {
         PlannedExpense expense = new PlannedExpense();
         expense.setCategory(expenseRequest.getCategory());
         expense.setCost(expenseRequest.getCost());
-        expense.setDate(expenseRequest.getDate());
+        expense.setDate(expenseRequest.getDate().withHour(LocalDateTime.now().getHour()).withMinute(LocalDateTime.now().getMinute()).withSecond(LocalDateTime.now().getSecond()));
         expenseRequest.getDescription().ifPresent(expense::setDescription);
         return plannedExpenseRepository.save(expense);
     }
@@ -74,7 +74,7 @@ public class PlannedExpenseService {
         }
         PlannedExpense expense = new PlannedExpense();
         expense.setId(oldExpense.get().getId());
-        expense.setDate(oldExpense.get().getDate());
+        expense.setDate(expenseRequest.getDate().withHour(LocalDateTime.now().getHour()).withMinute(LocalDateTime.now().getMinute()).withSecond(LocalDateTime.now().getSecond()));
         expense.setCategory(expenseRequest.getCategory());
         expense.setCost(expenseRequest.getCost());
         expenseRequest.getDescription().ifPresent(expense::setDescription);

@@ -7,6 +7,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { usePlannedExpensesContext } from "../../context/PlannedExpenseContext";
 import { useNavigate } from "react-router-dom";
 import { ExpenseData } from "../../models/ExpenseData";
+import { ResponseStatusData } from "../../models/ResponseStatusData";
 interface Props {
   planned?: boolean;
   edit?: boolean;
@@ -21,9 +22,9 @@ function AddExpenseForm({ planned, edit, editId }: Props) {
   const [date, setDate] = useState(new Date());
 
   const navigate = useNavigate();
-
-  const { AddExpense, GetExpense } = useExpensesContext();
-  const { AddPlannedExpense, GetPlannedExpense } = usePlannedExpensesContext();
+  const { AddExpense, GetExpense, UpdateExpense } = useExpensesContext();
+  const { AddPlannedExpense, GetPlannedExpense, UpdatePlannedExpense } =
+    usePlannedExpensesContext();
 
   const clearMessages = () => {
     setErrorMessage("");
@@ -46,27 +47,48 @@ function AddExpenseForm({ planned, edit, editId }: Props) {
     };
     loadExpense();
   }, [edit, editId]);
+
+  const submitForm = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    clearMessages();
+    if (cost === "" || category === "" || parseFloat(cost) >= 10000) {
+      if (parseFloat(cost) >= 10000)
+        setErrorMessage("Expense cost must be below 10000$");
+      return;
+    }
+    try {
+      const body = {
+        cost: parseFloat(cost),
+        category,
+        description,
+        date,
+      };
+      const response: ResponseStatusData =
+        edit && editId
+          ? planned
+            ? await UpdatePlannedExpense(editId, body)
+            : await UpdateExpense(editId, body)
+          : planned
+          ? await AddPlannedExpense(body)
+          : await AddExpense(body);
+      if (response.status >= 300) {
+        setErrorMessage(response.message);
+        return;
+      }
+      setInfoMessage(response.message);
+      setCost("");
+      setDescription("");
+      if (edit) {
+        navigate(`/Finance-Manager/${planned ? "planned" : "history"}`);
+      }
+    } catch (err) {
+      console.log(err);
+      setErrorMessage("Enter valid number");
+    }
+  };
   return (
     <motion.form
-      onSubmit={(e) => {
-        e.preventDefault();
-        clearMessages();
-        if (cost === "" || category === "" || parseFloat(cost) >= 10000) {
-          if (parseFloat(cost) >= 10000)
-            setErrorMessage("Expense cost must be below 10000$");
-          return;
-        }
-        try {
-          if (planned)
-            AddPlannedExpense(parseFloat(cost), category, description, date);
-          else AddExpense(parseFloat(cost), category, description);
-          setInfoMessage("Expense added");
-          setCost("");
-          setDescription("");
-        } catch (err) {
-          console.log(err);
-        }
-      }}
+      onSubmit={submitForm}
       layout
       className="bg-background-50 shadow-md  rounded-md p-5 flex flex-col items-center justify-center text-center max-w-sm w-full"
     >
@@ -120,23 +142,20 @@ function AddExpenseForm({ planned, edit, editId }: Props) {
           <option value={category.name}>{category.name}</option>
         ))}
       </select>
-      {planned && (
-        <>
-          <label htmlFor="date">Date</label>
-          <input
-            required
-            type="date"
-            value={date.toISOString().split("T")[0]}
-            min={new Date().toISOString().split("T")[0]}
-            onChange={(e) => {
-              clearMessages();
-              const selectedDate = new Date(e.target.value);
-              setDate(selectedDate);
-            }}
-            className="bg-gray-50 border border-gray-300  rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-3 mb-2"
-          />
-        </>
-      )}
+      <label htmlFor="date">Date</label>
+      <input
+        required
+        type="date"
+        value={date.toISOString().split("T")[0]}
+        min={planned ? new Date().toISOString().split("T")[0] : undefined}
+        max={!planned ? new Date().toISOString().split("T")[0] : undefined}
+        onChange={(e) => {
+          clearMessages();
+          const selectedDate = new Date(e.target.value);
+          setDate(selectedDate);
+        }}
+        className="bg-gray-50 border border-gray-300  rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-3 mb-2"
+      />
       <label htmlFor="description">Description</label>
       <textarea
         name="description"
@@ -154,7 +173,7 @@ function AddExpenseForm({ planned, edit, editId }: Props) {
         parentClass="w-full"
         className="w-full text-xl"
       >
-        Add
+        {`${edit ? "Edit" : "Add"}`}
       </CustomButton>
     </motion.form>
   );

@@ -33,30 +33,30 @@ function ExpensesHistory({ type }: Props) {
 
   const { GetExpenses } = useExpensesContext();
 
+  const LoadExpenses = async () => {
+    const data: AllExpensesResponseData =
+      category === "All"
+        ? await GetExpenses(
+            page,
+            itemsPerPage,
+            sorting,
+            type === ExpenseHistoryType.PlannedExpenses
+              ? ExpenseType.planned
+              : ExpenseType.normal
+          )
+        : await GetExpenses(
+            page,
+            itemsPerPage,
+            sorting,
+            type === ExpenseHistoryType.PlannedExpenses
+              ? ExpenseType.planned
+              : ExpenseType.normal,
+            category
+          );
+    setExpenses(data.expenses);
+    setTotalPages(data.totalPages);
+  };
   useEffect(() => {
-    const LoadExpenses = async () => {
-      const data: AllExpensesResponseData =
-        category === "All"
-          ? await GetExpenses(
-              page,
-              itemsPerPage,
-              sorting,
-              type === ExpenseHistoryType.PlannedExpenses
-                ? ExpenseType.planned
-                : ExpenseType.normal
-            )
-          : await GetExpenses(
-              page,
-              itemsPerPage,
-              sorting,
-              type === ExpenseHistoryType.PlannedExpenses
-                ? ExpenseType.planned
-                : ExpenseType.normal,
-              category
-            );
-      setExpenses(data.expenses);
-      setTotalPages(data.totalPages);
-    };
     LoadExpenses();
   }, [GetExpenses, setExpenses, setTotalPages, sorting, category, page, type]);
   return (
@@ -93,6 +93,7 @@ function ExpensesHistory({ type }: Props) {
                   prev === expense ? undefined : expense
                 );
               }}
+              onDelete={LoadExpenses}
             />
           ))}
         </AnimatePresence>

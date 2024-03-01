@@ -40,6 +40,7 @@ interface ExpensesContextProps {
     expense: ExpenseRequestData,
     type: ExpenseType
   ) => Promise<ResponseStatusData>;
+  DeleteExpense: (id: number, type: ExpenseType) => Promise<ResponseStatusData>;
 }
 const ExpensesContext = createContext({} as ExpensesContextProps);
 
@@ -258,6 +259,28 @@ export function ExpensesContextProvider({
     }
     return { plannedExpenses: [], totalPlannedExpenses: 0 };
   };
+  const DeleteExpense = async (
+    id: number,
+    type: ExpenseType
+  ): Promise<ResponseStatusData> => {
+    try {
+      const res = await api.delete(
+        `/${
+          type === ExpenseType.planned ? "planned_expenses" : "expenses"
+        }/${id}`
+      );
+      return {
+        status: res.status,
+        message: "Expense deleted",
+      } as ResponseStatusData;
+    } catch (err) {
+      console.log(err);
+    }
+    return {
+      status: 500,
+      message: "Cannot delete expense",
+    } as ResponseStatusData;
+  };
   return (
     <ExpensesContext.Provider
       value={{
@@ -268,6 +291,7 @@ export function ExpensesContextProvider({
         GetExpense,
         UpdateExpense,
         GetPlannedExpensesDashboard,
+        DeleteExpense,
       }}
     >
       {children}

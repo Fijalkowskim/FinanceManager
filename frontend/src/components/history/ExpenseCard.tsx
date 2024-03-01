@@ -5,13 +5,30 @@ import dateFormat from "dateformat";
 import { AnimatePresence, motion } from "framer-motion";
 import CustomButton from "../general/CustomButton";
 import { NavLink } from "react-router-dom";
+import { useExpensesContext } from "../../context/ExpensesContext";
+import { ResponseStatusData } from "../../models/ResponseStatusData";
+import { ExpenseType } from "../../models/ExpenseType";
 interface Props {
   expense: ExpenseData;
   planned?: boolean;
   details?: boolean;
   onClick?: () => void;
+  onDelete?: () => void;
 }
-function ExpenseCard({ expense, planned, details, onClick }: Props) {
+function ExpenseCard({ expense, planned, details, onClick, onDelete }: Props) {
+  const { DeleteExpense } = useExpensesContext();
+  const tryDeleteExpense = async (
+    e: React.MouseEvent<HTMLButtonElement, MouseEvent>
+  ) => {
+    e.stopPropagation();
+    const response: ResponseStatusData = await DeleteExpense(
+      expense.id,
+      planned ? ExpenseType.planned : ExpenseType.normal
+    );
+    if (response.status < 300) {
+      onDelete && onDelete();
+    }
+  };
   return (
     <motion.button
       layout
@@ -68,12 +85,7 @@ function ExpenseCard({ expense, planned, details, onClick }: Props) {
                 Edit
               </CustomButton>
             </NavLink>
-            <CustomButton
-              className="w-20"
-              onClick={(e) => {
-                e.stopPropagation();
-              }}
-            >
+            <CustomButton className="w-20" onClick={tryDeleteExpense}>
               Delete
             </CustomButton>
           </motion.div>

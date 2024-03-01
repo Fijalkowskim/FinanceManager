@@ -4,31 +4,40 @@ import CustomButton from "../general/CustomButton";
 import { useExpensesContext } from "../../context/ExpensesContext";
 import MessagePopup from "../general/MessagePopup";
 import { AnimatePresence, motion } from "framer-motion";
-
-function AddExpenseForm() {
+import { usePlannedExpensesContext } from "../../context/PlannedExpenseContext";
+interface Props {
+  planned?: boolean;
+}
+function AddExpenseForm({ planned }: Props) {
   const [cost, setCost] = useState("");
   const [description, setDescription] = useState("");
   const [category, setCategory] = useState(categories[0].name);
   const [errorMessage, setErrorMessage] = useState("");
+  const [infoMessage, setInfoMessage] = useState("");
+  const [date, setDate] = useState(new Date());
   const { AddExpense } = useExpensesContext();
-  const clearErrorMessage = () => {
+  const { AddPlannedExpense } = usePlannedExpensesContext();
+  const clearMessages = () => {
     setErrorMessage("");
+    setInfoMessage("");
   };
   return (
     <motion.form
       onSubmit={(e) => {
         e.preventDefault();
-        clearErrorMessage();
+        clearMessages();
         if (cost === "" || category === "" || parseFloat(cost) >= 10000) {
           if (parseFloat(cost) >= 10000)
             setErrorMessage("Expense cost must be below 10000$");
           return;
         }
         try {
-          AddExpense(parseFloat(cost), category, description);
+          if (planned)
+            AddPlannedExpense(parseFloat(cost), category, description, date);
+          else AddExpense(parseFloat(cost), category, description);
+          setInfoMessage("Expense added");
           setCost("");
           setDescription("");
-          setCategory(categories[0].name);
         } catch (err) {
           console.log(err);
         }
@@ -37,12 +46,20 @@ function AddExpenseForm() {
       className="bg-background-50 shadow-md  rounded-md p-5 flex flex-col items-center justify-center text-center max-w-sm w-full"
     >
       <h1 className="text-4xl font-extralight text-primary-700 mb-1">
-        New expense
+        {`${planned ? "Plan" : "New"} expense`}
       </h1>
+
       <div className="w-full h-[0.1px] bg-primary-950/30 mb-2" />
       <AnimatePresence>
         {errorMessage !== "" && (
           <MessagePopup message={errorMessage} setMessage={setErrorMessage} />
+        )}
+        {infoMessage !== "" && (
+          <MessagePopup
+            message={infoMessage}
+            setMessage={setInfoMessage}
+            variant={"success"}
+          />
         )}
       </AnimatePresence>
       <label htmlFor="cost">Cost in $</label>
@@ -55,7 +72,7 @@ function AddExpenseForm() {
         required
         value={cost}
         onChange={(e) => {
-          clearErrorMessage();
+          clearMessages();
           const validated = e.target.value.match(/^(\d*\.{0,1}\d{0,2}$)/);
           if (validated) {
             setCost(e.target.value);
@@ -67,7 +84,7 @@ function AddExpenseForm() {
       <select
         value={category}
         onChange={(e) => {
-          clearErrorMessage();
+          clearMessages();
           setCategory(e.target.value);
         }}
         name="category"
@@ -78,6 +95,23 @@ function AddExpenseForm() {
           <option value={category.name}>{category.name}</option>
         ))}
       </select>
+      {planned && (
+        <>
+          <label htmlFor="date">Date</label>
+          <input
+            required
+            type="date"
+            value={date.toISOString().split("T")[0]}
+            min={new Date().toISOString().split("T")[0]}
+            onChange={(e) => {
+              clearMessages();
+              const selectedDate = new Date(e.target.value);
+              setDate(selectedDate);
+            }}
+            className="bg-gray-50 border border-gray-300  rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-3 mb-2"
+          />
+        </>
+      )}
       <label htmlFor="description">Description</label>
       <textarea
         name="description"
@@ -85,7 +119,7 @@ function AddExpenseForm() {
         rows={8}
         value={description}
         onChange={(e) => {
-          clearErrorMessage();
+          clearMessages();
           setDescription(e.target.value);
         }}
         className="p-3 shadow-sm rounded-lg border border-gray-300 mb-2 w-full resize-none"

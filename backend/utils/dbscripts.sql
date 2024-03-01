@@ -66,8 +66,14 @@ VALUES
     (120.00, 'Travel', 'Planning a future trip', '2024-02-22'),
     (8.50, 'Other', 'Coffee with friends', '2024-02-12');
 
--- Planned expenses
+-- 03 .2024
+INSERT INTO expenses (cost, category, description, date)
+VALUES
+    (40.50, 'Groceries', 'Weekly grocery shopping', '2024-03-01'),
+    (25.00, 'Utilities', 'Gas bill', '2024-03-01'),
+    (15.75, 'Transportation', 'Bus tickets', '2024-03-01');
 
+-- Planned expenses
 INSERT INTO planned_expenses (cost, category, description, date)
 VALUES
     (40.50, 'Groceries', 'Grocery shopping', '2024-03-05'),

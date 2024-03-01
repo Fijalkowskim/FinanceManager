@@ -27,7 +27,10 @@ function App() {
             path="/Finance-Manager/planned"
             element={<PlannedExpenses />}
           />
-          <Route path="/Finance-Manager/add" element={<AddExpense />} />
+          <Route
+            path="/Finance-Manager/add/:planned?"
+            element={<AddExpense />}
+          />
           <Route path="*" element={<Navigate to="/Finance-Manager" />} />
         </Routes>
         <Footer />

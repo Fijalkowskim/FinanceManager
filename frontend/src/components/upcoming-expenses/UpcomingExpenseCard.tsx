@@ -18,10 +18,10 @@ function UpcomingExpenseCard({ expense }: Props) {
 
       <div></div>
       <p className="truncate text-background-800 text-base">
-        {expense.description}
+        {expense.description === "" ? "-" : expense.description}
       </p>
       <p className="text-xl ml-auto truncate flex-shrink-0 max-w-20">
-        {expense.cost}$
+        {expense.cost.toFixed(2)}$
       </p>
     </button>
   );

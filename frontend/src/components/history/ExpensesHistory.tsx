@@ -10,6 +10,8 @@ import { AllExpensesResponseData } from "../../models/AllExpensesResponseData";
 import PageNavigation from "./PageNavigation";
 import { usePlannedExpensesContext } from "../../context/PlannedExpenseContext";
 import HistoryFilters from "./HistoryFilters";
+import { NavLink } from "react-router-dom";
+import CustomButton from "../general/CustomButton";
 
 export enum ExpenseHistoryType {
   Expenses,
@@ -45,6 +47,11 @@ function ExpensesHistory({ type }: Props) {
   }, [GetExpenses, setExpenses, setTotalPages, sorting, category, page, type]);
   return (
     <div className="flex items-center justify-start flex-col gap-1 w-full">
+      {type === ExpenseHistoryType.PlannedExpenses && (
+        <NavLink to="/Finance-Manager/add/planned">
+          <CustomButton variant={"primary"}>Add planned expense</CustomButton>
+        </NavLink>
+      )}
       <HistoryFilters
         category={category}
         setCategory={setCategory}
@@ -58,7 +65,7 @@ function ExpensesHistory({ type }: Props) {
       <div className="-mb-3" />
       <div className="flex flex-col justify-start items-center w-full gap-3 mt-4 ">
         {expenses.map((expense, idx) => (
-          <ExpenseCard data={expense} key={idx} />
+          <ExpenseCard expense={expense} key={idx} />
         ))}
       </div>
       {expenses.length === 0 && <p>No expesnses yet</p>}

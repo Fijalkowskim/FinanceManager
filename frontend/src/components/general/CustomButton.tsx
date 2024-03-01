@@ -12,6 +12,7 @@ const variants = cva(
         inverted:
           "border-2 border-action-500 bg-primary-50 hover:bg-primary-100",
         primary: "bg-primary-500 hover:bg-primary-600 text-primary-50 ",
+        green: "bg-green-500 hover:bg-green-600 text-primary-50",
       },
     },
     defaultVariants: {

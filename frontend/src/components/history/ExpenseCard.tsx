@@ -36,7 +36,7 @@ function ExpenseCard({ expense, planned, details, onClick, onDelete }: Props) {
         e.stopPropagation();
         onClick && onClick();
       }}
-      className="shadow-sm bg-background-50 w-full max-w-2xl p-3 border-background-300/50 border text-left"
+      className="shadow-sm bg-background-50 hover:bg-background-100 w-full max-w-2xl p-3 border-background-300/50 border text-left transition-color"
     >
       <motion.div
         layout
@@ -88,6 +88,11 @@ function ExpenseCard({ expense, planned, details, onClick, onDelete }: Props) {
             <CustomButton className="w-20" onClick={tryDeleteExpense}>
               Delete
             </CustomButton>
+            {planned && (
+              <CustomButton className="w-20" variant={"green"}>
+                Paid
+              </CustomButton>
+            )}
           </motion.div>
         ) : (
           <motion.p className="truncate text-background-800">

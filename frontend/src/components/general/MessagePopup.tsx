@@ -20,16 +20,9 @@ interface Props
     VariantProps<typeof variants> {
   className?: string;
   message: string;
-  setMessage: React.Dispatch<React.SetStateAction<string>>;
 }
 
-function MessagePopup({
-  className,
-  variant,
-  message,
-  setMessage,
-  ...props
-}: Props) {
+function MessagePopup({ className, variant, message, ...props }: Props) {
   return (
     <motion.div
       initial={{ scale: 0 }}

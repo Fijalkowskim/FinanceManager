@@ -8,6 +8,7 @@ import { usePlannedExpensesContext } from "../../context/PlannedExpenseContext";
 import { useNavigate } from "react-router-dom";
 import { ExpenseData } from "../../models/ExpenseData";
 import { ResponseStatusData } from "../../models/ResponseStatusData";
+import { usePopupContext } from "../../context/PopupContext";
 interface Props {
   planned?: boolean;
   edit?: boolean;
@@ -17,8 +18,7 @@ function AddExpenseForm({ planned, edit, editId }: Props) {
   const [cost, setCost] = useState("");
   const [description, setDescription] = useState("");
   const [category, setCategory] = useState(categories[0].name);
-  const [errorMessage, setErrorMessage] = useState("");
-  const [infoMessage, setInfoMessage] = useState("");
+
   const [date, setDate] = useState(new Date());
 
   const navigate = useNavigate();
@@ -26,10 +26,13 @@ function AddExpenseForm({ planned, edit, editId }: Props) {
   const { AddPlannedExpense, GetPlannedExpense, UpdatePlannedExpense } =
     usePlannedExpensesContext();
 
-  const clearMessages = () => {
-    setErrorMessage("");
-    setInfoMessage("");
-  };
+  const {
+    errorMessage,
+    infoMessage,
+    setErrorMessage,
+    setInfoMessage,
+    clearMessages,
+  } = usePopupContext();
 
   useEffect(() => {
     const loadExpense = async () => {
@@ -98,15 +101,9 @@ function AddExpenseForm({ planned, edit, editId }: Props) {
 
       <div className="w-full h-[0.1px] bg-primary-950/30 mb-2" />
       <AnimatePresence>
-        {errorMessage !== "" && (
-          <MessagePopup message={errorMessage} setMessage={setErrorMessage} />
-        )}
+        {errorMessage !== "" && <MessagePopup message={errorMessage} />}
         {infoMessage !== "" && (
-          <MessagePopup
-            message={infoMessage}
-            setMessage={setInfoMessage}
-            variant={"success"}
-          />
+          <MessagePopup message={infoMessage} variant={"success"} />
         )}
       </AnimatePresence>
       <label htmlFor="cost">Cost in $</label>

@@ -8,11 +8,11 @@ import ExpenseCard from "./ExpenseCard";
 
 import { AllExpensesResponseData } from "../../models/AllExpensesResponseData";
 import PageNavigation from "./PageNavigation";
-import { usePlannedExpensesContext } from "../../context/PlannedExpenseContext";
 import HistoryFilters from "./HistoryFilters";
 import { NavLink } from "react-router-dom";
 import CustomButton from "../general/CustomButton";
 import { AnimatePresence, motion } from "framer-motion";
+import { ExpenseType } from "../../models/ExpenseType";
 
 export enum ExpenseHistoryType {
   Expenses,
@@ -32,18 +32,28 @@ function ExpensesHistory({ type }: Props) {
   const [selectedExpense, setSelectedExpense] = useState<ExpenseData>();
 
   const { GetExpenses } = useExpensesContext();
-  const { GetPlannedExpenses } = usePlannedExpensesContext();
 
   useEffect(() => {
     const LoadExpenses = async () => {
       const data: AllExpensesResponseData =
         category === "All"
-          ? type === ExpenseHistoryType.PlannedExpenses
-            ? await GetPlannedExpenses(page, itemsPerPage, sorting)
-            : await GetExpenses(page, itemsPerPage, sorting)
-          : type === ExpenseHistoryType.PlannedExpenses
-          ? await GetPlannedExpenses(page, itemsPerPage, sorting, category)
-          : await GetExpenses(page, itemsPerPage, sorting, category);
+          ? await GetExpenses(
+              page,
+              itemsPerPage,
+              sorting,
+              type === ExpenseHistoryType.PlannedExpenses
+                ? ExpenseType.planned
+                : ExpenseType.normal
+            )
+          : await GetExpenses(
+              page,
+              itemsPerPage,
+              sorting,
+              type === ExpenseHistoryType.PlannedExpenses
+                ? ExpenseType.planned
+                : ExpenseType.normal,
+              category
+            );
       setExpenses(data.expenses);
       setTotalPages(data.totalPages);
     };

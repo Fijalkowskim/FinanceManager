@@ -1,14 +1,14 @@
 import React, { useEffect, useState } from "react";
 import { ExpenseData } from "../../models/ExpenseData";
-import { usePlannedExpensesContext } from "../../context/PlannedExpenseContext";
 import { PlannedExpensesData } from "../../models/PlannedExpensesData";
 import { NavLink } from "react-router-dom";
 import CustomButton from "../general/CustomButton";
 import ExpenseCard from "../history/ExpenseCard";
 import UpcomingExpenseCard from "./UpcomingExpenseCard";
+import { useExpensesContext } from "../../context/ExpensesContext";
 function UpcomingExpenses() {
   const [dashboardData, setDashboardData] = useState<PlannedExpensesData>();
-  const { GetPlannedExpensesDashboard } = usePlannedExpensesContext();
+  const { GetPlannedExpensesDashboard } = useExpensesContext();
   const [daysFromNow] = useState(7);
   const [displayedAmount] = useState(2);
   useEffect(() => {

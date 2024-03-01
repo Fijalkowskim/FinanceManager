@@ -8,23 +8,37 @@ import { AllExpensesResponseData } from "../models/AllExpensesResponseData";
 import { ExpenseRequestData } from "../models/ExpenseRequestData";
 import dateFormat from "dateformat";
 import { ResponseStatusData } from "../models/ResponseStatusData";
+import { ExpenseType } from "../models/ExpenseType";
+import { PlannedExpensesData } from "../models/PlannedExpensesData";
 interface ExpensesContextProviderProps {
   children: ReactNode;
 }
 interface ExpensesContextProps {
   GetMontlyDashbord: (date: Date) => Promise<DashboardData | undefined>;
+  GetPlannedExpensesDashboard: (
+    daysFromNow: number,
+    amount: number
+  ) => Promise<PlannedExpensesData>;
   GetMontlyExpenses: (date: Date) => Promise<ExpenseData[]>;
-  GetExpense: (id: number) => Promise<ExpenseData | undefined>;
+  GetExpense: (
+    id: number,
+    type: ExpenseType
+  ) => Promise<ExpenseData | undefined>;
   GetExpenses: (
     page: number,
     pageSize: number,
     sortType: SortType,
+    type: ExpenseType,
     category?: string
   ) => Promise<AllExpensesResponseData>;
-  AddExpense: (expense: ExpenseRequestData) => Promise<ResponseStatusData>;
+  AddExpense: (
+    expense: ExpenseRequestData,
+    type: ExpenseType
+  ) => Promise<ResponseStatusData>;
   UpdateExpense: (
     id: number,
-    expense: ExpenseRequestData
+    expense: ExpenseRequestData,
+    type: ExpenseType
   ) => Promise<ResponseStatusData>;
 }
 const ExpensesContext = createContext({} as ExpensesContextProps);
@@ -91,7 +105,8 @@ export function ExpensesContextProvider({
     return undefined;
   };
   const AddExpense = async (
-    expense: ExpenseRequestData
+    expense: ExpenseRequestData,
+    type: ExpenseType
   ): Promise<ResponseStatusData> => {
     const body = {
       cost: expense.cost,
@@ -100,7 +115,10 @@ export function ExpensesContextProvider({
       date: dateFormat(expense.date, "yyyy-mm-dd hh:MM:ss"),
     };
     try {
-      const res = await api.post("/expenses", body);
+      const res = await api.post(
+        `/${type === ExpenseType.planned ? "planned_expenses" : "expenses"}`,
+        body
+      );
       return {
         status: res.status,
         message: "Expense added",
@@ -113,9 +131,16 @@ export function ExpensesContextProvider({
       message: "Something went wrong",
     } as ResponseStatusData;
   };
-  const GetExpense = async (id: number): Promise<ExpenseData | undefined> => {
+  const GetExpense = async (
+    id: number,
+    type: ExpenseType
+  ): Promise<ExpenseData | undefined> => {
     try {
-      const res = await api.get(`/expenses/${id}`);
+      const res = await api.get(
+        `/${
+          type === ExpenseType.planned ? "planned_expenses" : "expenses"
+        }/${id}`
+      );
       if (res.data) {
         const expense: ExpenseData = {
           id: res.data.id,
@@ -135,11 +160,14 @@ export function ExpensesContextProvider({
     page: number,
     pageSize: number,
     sortType: SortType,
+    type: ExpenseType,
     category?: string
   ): Promise<AllExpensesResponseData> => {
     try {
       const res = await api.get(
-        `/expenses?page=${page}&pageSize=${pageSize}${
+        `/${
+          type === ExpenseType.planned ? "planned_expenses" : "expenses"
+        }?page=${page}&pageSize=${pageSize}${
           category ? `&category=${category}` : ""
         }${
           sortType === SortType.DateAsc
@@ -172,7 +200,8 @@ export function ExpensesContextProvider({
   };
   const UpdateExpense = async (
     id: number,
-    expense: ExpenseRequestData
+    expense: ExpenseRequestData,
+    type: ExpenseType
   ): Promise<ResponseStatusData> => {
     const body = {
       cost: expense.cost,
@@ -181,7 +210,12 @@ export function ExpensesContextProvider({
       date: dateFormat(expense.date, "yyyy-mm-dd hh:MM:ss"),
     };
     try {
-      const res = await api.put(`/expenses/${id}`, body);
+      const res = await api.put(
+        `/${
+          type === ExpenseType.planned ? "planned_expenses" : "expenses"
+        }/${id}`,
+        body
+      );
       return {
         status: res.status,
         message: "Expense updated",
@@ -194,6 +228,36 @@ export function ExpensesContextProvider({
       message: "Something went wrong",
     } as ResponseStatusData;
   };
+  const GetPlannedExpensesDashboard = async (
+    daysFromNow: number,
+    amount: number
+  ): Promise<PlannedExpensesData> => {
+    try {
+      const res = await api.get(
+        `/planned_expenses/dashboard?daysFromNow=${daysFromNow}&amount=${amount}`
+      );
+      if (res.data) {
+        const expenses: ExpenseData[] = (
+          res.data.plannedExpenses as ExpenseResponseData[]
+        ).map((data) => {
+          return {
+            id: data.id,
+            category: data.category,
+            description: data.description,
+            date: new Date(data.date),
+            cost: data.cost,
+          };
+        });
+        return {
+          plannedExpenses: expenses,
+          totalPlannedExpenses: res.data.totalPlannedExpenses,
+        };
+      }
+    } catch (err) {
+      console.log(err);
+    }
+    return { plannedExpenses: [], totalPlannedExpenses: 0 };
+  };
   return (
     <ExpensesContext.Provider
       value={{
@@ -203,6 +267,7 @@ export function ExpensesContextProvider({
         GetExpenses,
         GetExpense,
         UpdateExpense,
+        GetPlannedExpensesDashboard,
       }}
     >
       {children}

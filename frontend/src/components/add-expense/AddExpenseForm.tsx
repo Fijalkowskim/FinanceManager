@@ -4,11 +4,11 @@ import CustomButton from "../general/CustomButton";
 import { useExpensesContext } from "../../context/ExpensesContext";
 import MessagePopup from "../general/MessagePopup";
 import { AnimatePresence, motion } from "framer-motion";
-import { usePlannedExpensesContext } from "../../context/PlannedExpenseContext";
 import { useNavigate } from "react-router-dom";
 import { ExpenseData } from "../../models/ExpenseData";
 import { ResponseStatusData } from "../../models/ResponseStatusData";
 import { usePopupContext } from "../../context/PopupContext";
+import { ExpenseType } from "../../models/ExpenseType";
 interface Props {
   planned?: boolean;
   edit?: boolean;
@@ -23,8 +23,6 @@ function AddExpenseForm({ planned, edit, editId }: Props) {
 
   const navigate = useNavigate();
   const { AddExpense, GetExpense, UpdateExpense } = useExpensesContext();
-  const { AddPlannedExpense, GetPlannedExpense, UpdatePlannedExpense } =
-    usePlannedExpensesContext();
 
   const {
     errorMessage,
@@ -37,9 +35,10 @@ function AddExpenseForm({ planned, edit, editId }: Props) {
   useEffect(() => {
     const loadExpense = async () => {
       if (edit && editId) {
-        const expense = planned
-          ? await GetPlannedExpense(editId)
-          : await GetExpense(editId);
+        const expense = await GetExpense(
+          editId,
+          planned ? ExpenseType.planned : ExpenseType.normal
+        );
         if (expense) {
           setCost(expense.cost.toString());
           setCategory(expense.category);
@@ -68,12 +67,15 @@ function AddExpenseForm({ planned, edit, editId }: Props) {
       };
       const response: ResponseStatusData =
         edit && editId
-          ? planned
-            ? await UpdatePlannedExpense(editId, body)
-            : await UpdateExpense(editId, body)
-          : planned
-          ? await AddPlannedExpense(body)
-          : await AddExpense(body);
+          ? await UpdateExpense(
+              editId,
+              body,
+              planned ? ExpenseType.planned : ExpenseType.normal
+            )
+          : await AddExpense(
+              body,
+              planned ? ExpenseType.planned : ExpenseType.normal
+            );
       if (response.status >= 300) {
         setErrorMessage(response.message);
         return;

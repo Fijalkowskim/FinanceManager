@@ -12,6 +12,7 @@ import { usePlannedExpensesContext } from "../../context/PlannedExpenseContext";
 import HistoryFilters from "./HistoryFilters";
 import { NavLink } from "react-router-dom";
 import CustomButton from "../general/CustomButton";
+import { AnimatePresence, motion } from "framer-motion";
 
 export enum ExpenseHistoryType {
   Expenses,
@@ -28,8 +29,11 @@ function ExpensesHistory({ type }: Props) {
   const [page, setPage] = useState(0);
   const [totalPages, setTotalPages] = useState(0);
   const [itemsPerPage, setItemsPerPage] = useState(20);
+  const [selectedExpense, setSelectedExpense] = useState<ExpenseData>();
+
   const { GetExpenses } = useExpensesContext();
   const { GetPlannedExpenses } = usePlannedExpensesContext();
+
   useEffect(() => {
     const LoadExpenses = async () => {
       const data: AllExpensesResponseData =
@@ -46,7 +50,7 @@ function ExpensesHistory({ type }: Props) {
     LoadExpenses();
   }, [GetExpenses, setExpenses, setTotalPages, sorting, category, page, type]);
   return (
-    <div className="flex items-center justify-start flex-col gap-1 w-full">
+    <div className="flex items-center justify-start flex-col gap-1 w-full overflow-hidden">
       {type === ExpenseHistoryType.PlannedExpenses && (
         <NavLink to="/Finance-Manager/add/planned">
           <CustomButton variant={"primary"}>Add planned expense</CustomButton>
@@ -63,11 +67,25 @@ function ExpensesHistory({ type }: Props) {
         <PageNavigation page={page} totalPages={totalPages} setPage={setPage} />
       )}
       <div className="-mb-3" />
-      <div className="flex flex-col justify-start items-center w-full gap-3 mt-4 ">
-        {expenses.map((expense, idx) => (
-          <ExpenseCard expense={expense} key={idx} />
-        ))}
-      </div>
+      <motion.div
+        layout
+        className="flex flex-col justify-start items-center w-full gap-3 mt-4 "
+      >
+        <AnimatePresence mode="popLayout">
+          {expenses.map((expense, idx) => (
+            <ExpenseCard
+              expense={expense}
+              key={idx}
+              details={selectedExpense === expense}
+              onClick={() => {
+                setSelectedExpense((prev) =>
+                  prev === expense ? undefined : expense
+                );
+              }}
+            />
+          ))}
+        </AnimatePresence>
+      </motion.div>
       {expenses.length === 0 && <p>No expesnses yet</p>}
       {expenses.length > 0 && (
         <PageNavigation page={page} totalPages={totalPages} setPage={setPage} />

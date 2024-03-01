@@ -52,7 +52,7 @@ function ExpensesHistory({ type }: Props) {
   return (
     <div className="flex items-center justify-start flex-col gap-1 w-full overflow-hidden">
       {type === ExpenseHistoryType.PlannedExpenses && (
-        <NavLink to="/Finance-Manager/add/planned">
+        <NavLink to="/Finance-Manager/plan">
           <CustomButton variant={"primary"}>Add planned expense</CustomButton>
         </NavLink>
       )}
@@ -76,6 +76,7 @@ function ExpensesHistory({ type }: Props) {
             <ExpenseCard
               expense={expense}
               key={idx}
+              planned={type === ExpenseHistoryType.PlannedExpenses}
               details={selectedExpense === expense}
               onClick={() => {
                 setSelectedExpense((prev) =>

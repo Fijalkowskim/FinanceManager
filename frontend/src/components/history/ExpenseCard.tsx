@@ -4,12 +4,14 @@ import { GetCategoryData } from "../../categories/Categories";
 import dateFormat from "dateformat";
 import { AnimatePresence, motion } from "framer-motion";
 import CustomButton from "../general/CustomButton";
+import { NavLink } from "react-router-dom";
 interface Props {
   expense: ExpenseData;
+  planned?: boolean;
   details?: boolean;
   onClick?: () => void;
 }
-function ExpenseCard({ expense, details, onClick }: Props) {
+function ExpenseCard({ expense, planned, details, onClick }: Props) {
   return (
     <motion.button
       layout
@@ -35,7 +37,7 @@ function ExpenseCard({ expense, details, onClick }: Props) {
             <p
               className={`${
                 expense.category.length >= 10
-                  ? "text-xs sm:text-sm"
+                  ? "text-xs mb-1 sm:text-sm"
                   : "text-sm sm:text-base"
               }`}
             >
@@ -51,15 +53,21 @@ function ExpenseCard({ expense, details, onClick }: Props) {
             exit={{ opacity: 0 }}
             className="flex  items-center justify-center gap-3"
           >
-            <CustomButton
-              className="w-20"
-              variant={"primary"}
-              onClick={(e) => {
-                e.stopPropagation();
-              }}
+            <NavLink
+              to={`/Finance-Manager/${planned ? "edit-planned" : "edit"}/${
+                expense.id
+              }`}
             >
-              Edit
-            </CustomButton>
+              <CustomButton
+                className="w-20"
+                variant={"primary"}
+                onClick={(e) => {
+                  e.stopPropagation();
+                }}
+              >
+                Edit
+              </CustomButton>
+            </NavLink>
             <CustomButton
               className="w-20"
               onClick={(e) => {

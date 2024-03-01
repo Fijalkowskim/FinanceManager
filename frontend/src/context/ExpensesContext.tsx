@@ -12,6 +12,7 @@ interface ExpensesContextProviderProps {
 interface ExpensesContextProps {
   GetMontlyDashbord: (date: Date) => Promise<DashboardData | undefined>;
   GetMontlyExpenses: (date: Date) => Promise<ExpenseData[]>;
+  GetExpense: (id: number) => Promise<ExpenseData | undefined>;
   GetExpenses: (
     page: number,
     pageSize: number,
@@ -98,6 +99,24 @@ export function ExpensesContextProvider({
         console.log(err);
       });
   };
+  const GetExpense = async (id: number): Promise<ExpenseData | undefined> => {
+    try {
+      const res = await api.get(`/expenses/${id}`);
+      if (res.data) {
+        const expense: ExpenseData = {
+          id: res.data.id,
+          category: res.data.category,
+          description: res.data.description,
+          date: new Date(res.data.date),
+          cost: res.data.cost,
+        };
+        return expense;
+      }
+    } catch (err) {
+      console.log(err);
+    }
+    return undefined;
+  };
   const GetExpenses = async (
     page: number,
     pageSize: number,
@@ -139,7 +158,13 @@ export function ExpensesContextProvider({
   };
   return (
     <ExpensesContext.Provider
-      value={{ GetMontlyExpenses, GetMontlyDashbord, AddExpense, GetExpenses }}
+      value={{
+        GetMontlyExpenses,
+        GetMontlyDashbord,
+        AddExpense,
+        GetExpenses,
+        GetExpense,
+      }}
     >
       {children}
     </ExpensesContext.Provider>

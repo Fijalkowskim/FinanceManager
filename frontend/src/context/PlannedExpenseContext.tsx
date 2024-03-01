@@ -11,6 +11,7 @@ interface PlannedExpensesContextProviderProps {
   children: ReactNode;
 }
 interface PlannedExpensesContextProps {
+  GetPlannedExpense: (id: number) => Promise<ExpenseData | undefined>;
   GetPlannedExpenses: (
     page: number,
     pageSize: number,
@@ -33,10 +34,29 @@ const PlannedExpensesContext = createContext({} as PlannedExpensesContextProps);
 export function usePlannedExpensesContext() {
   return useContext(PlannedExpensesContext);
 }
-
 export function PlannedExpensesContextProvider({
   children,
 }: PlannedExpensesContextProviderProps) {
+  const GetPlannedExpense = async (
+    id: number
+  ): Promise<ExpenseData | undefined> => {
+    try {
+      const res = await api.get(`/planned_expenses/${id}`);
+      if (res.data) {
+        const expense: ExpenseData = {
+          id: res.data.id,
+          category: res.data.category,
+          description: res.data.description,
+          date: new Date(res.data.date),
+          cost: res.data.cost,
+        };
+        return expense;
+      }
+    } catch (err) {
+      console.log(err);
+    }
+    return undefined;
+  };
   const AddPlannedExpense = (
     cost: number,
     category: string,
@@ -130,6 +150,7 @@ export function PlannedExpensesContextProvider({
   return (
     <PlannedExpensesContext.Provider
       value={{
+        GetPlannedExpense,
         AddPlannedExpense,
         GetPlannedExpenses,
         GetPlannedExpensesDashboard,

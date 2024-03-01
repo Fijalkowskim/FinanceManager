@@ -1,26 +1,51 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { categories } from "../../categories/Categories";
 import CustomButton from "../general/CustomButton";
 import { useExpensesContext } from "../../context/ExpensesContext";
 import MessagePopup from "../general/MessagePopup";
 import { AnimatePresence, motion } from "framer-motion";
 import { usePlannedExpensesContext } from "../../context/PlannedExpenseContext";
+import { useNavigate } from "react-router-dom";
+import { ExpenseData } from "../../models/ExpenseData";
 interface Props {
   planned?: boolean;
+  edit?: boolean;
+  editId?: number;
 }
-function AddExpenseForm({ planned }: Props) {
+function AddExpenseForm({ planned, edit, editId }: Props) {
   const [cost, setCost] = useState("");
   const [description, setDescription] = useState("");
   const [category, setCategory] = useState(categories[0].name);
   const [errorMessage, setErrorMessage] = useState("");
   const [infoMessage, setInfoMessage] = useState("");
   const [date, setDate] = useState(new Date());
-  const { AddExpense } = useExpensesContext();
-  const { AddPlannedExpense } = usePlannedExpensesContext();
+
+  const navigate = useNavigate();
+
+  const { AddExpense, GetExpense } = useExpensesContext();
+  const { AddPlannedExpense, GetPlannedExpense } = usePlannedExpensesContext();
+
   const clearMessages = () => {
     setErrorMessage("");
     setInfoMessage("");
   };
+
+  useEffect(() => {
+    const loadExpense = async () => {
+      if (edit && editId) {
+        const expense = planned
+          ? await GetPlannedExpense(editId)
+          : await GetExpense(editId);
+        if (expense) {
+          setCost(expense.cost.toString());
+          setCategory(expense.category);
+          setDescription(expense.description);
+          setDate(expense.date);
+        }
+      }
+    };
+    loadExpense();
+  }, [edit, editId]);
   return (
     <motion.form
       onSubmit={(e) => {
@@ -46,7 +71,7 @@ function AddExpenseForm({ planned }: Props) {
       className="bg-background-50 shadow-md  rounded-md p-5 flex flex-col items-center justify-center text-center max-w-sm w-full"
     >
       <h1 className="text-4xl font-extralight text-primary-700 mb-1">
-        {`${planned ? "Plan" : "New"} expense`}
+        {`${edit ? `Edit` : planned ? "Plan" : "New"} expense`}
       </h1>
 
       <div className="w-full h-[0.1px] bg-primary-950/30 mb-2" />

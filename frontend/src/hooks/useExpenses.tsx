@@ -5,25 +5,15 @@ import { ExpenseHistoryType } from "../components/history/ExpensesHistory";
 import { useExpensesContext } from "../context/ExpensesContext";
 import { ExpenseData } from "../models/ExpenseData";
 import { ExpenseType } from "../models/ExpenseType";
-interface Props {
-  page: number;
-  itemsPerPage: number;
-  sorting: SortType;
-  type: ExpenseHistoryType;
-  category: string;
-  deletedExpense: ExpenseData | undefined;
-}
-export const useExpenses = ({
-  page,
-  itemsPerPage,
-  sorting,
-  type,
-  category,
-  deletedExpense,
-}: Props) => {
+import { useExpenseHistoryContext } from "../context/ExpenseHistoryContext";
+
+export const useExpenses = (historyType: ExpenseHistoryType) => {
   const [expenses, setExpenses] = useState<ExpenseData[]>([]);
   const [totalPages, setTotalPages] = useState(1);
   const [isPending, setIsPending] = useState(false);
+
+  const { page, itemsPerPage, sorting, category, deletedExpense } =
+    useExpenseHistoryContext();
   const { GetExpenses } = useExpensesContext();
   useEffect(() => {
     const LoadExpenses = async () => {
@@ -32,7 +22,7 @@ export const useExpenses = ({
         page,
         itemsPerPage,
         sorting,
-        type === ExpenseHistoryType.PlannedExpenses
+        historyType === ExpenseHistoryType.PlannedExpenses
           ? ExpenseType.planned
           : ExpenseType.normal,
         category
@@ -51,7 +41,7 @@ export const useExpenses = ({
     sorting,
     category,
     page,
-    type,
+    historyType,
     itemsPerPage,
   ]);
   return { expenses, totalPages, isPending };

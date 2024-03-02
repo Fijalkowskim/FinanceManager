@@ -2,13 +2,11 @@ import React from "react";
 import { categories } from "../../categories/Categories";
 import { SortType } from "../../models/SortType";
 import { IoCaretDown, IoCaretUp } from "react-icons/io5";
-interface Props {
-  category: string;
-  setCategory: React.Dispatch<React.SetStateAction<string>>;
-  sorting: SortType;
-  setSorting: React.Dispatch<React.SetStateAction<SortType>>;
-}
-function HistoryFilters({ category, setCategory, sorting, setSorting }: Props) {
+import { useExpenseHistoryContext } from "../../context/ExpenseHistoryContext";
+
+function HistoryFilters() {
+  const { category, setCategory, sorting, setSorting } =
+    useExpenseHistoryContext();
   return (
     <div className="flex items-end justify-center gap-4 w-full">
       <div className="flex flex-col items-start justify-center flex-shrink-0">

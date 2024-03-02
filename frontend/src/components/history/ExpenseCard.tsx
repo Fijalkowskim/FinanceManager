@@ -8,18 +8,36 @@ import { NavLink } from "react-router-dom";
 import { useExpensesContext } from "../../context/ExpensesContext";
 import { ResponseStatusData } from "../../models/ResponseStatusData";
 import { ExpenseType } from "../../models/ExpenseType";
+import { useExpenseHistoryContext } from "../../context/ExpenseHistoryContext";
 interface Props {
   expense: ExpenseData;
   planned?: boolean;
-  details?: boolean;
-  onClick?: () => void;
-  onDelete?: () => void;
-  onPaid?: () => void;
 }
 const ExpenseCard = forwardRef<HTMLButtonElement, Props>(
-  ({ expense, planned, details, onClick, onDelete }: Props, ref) => {
+  ({ expense, planned }: Props, ref) => {
     const { DeleteExpense, AddExpense } = useExpensesContext();
-    const tryDeleteExpense = async (
+    const { selectedExpense, setSelectedExpense, setDeletedExpense } =
+      useExpenseHistoryContext();
+
+    const onClick = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+      e.stopPropagation();
+      setSelectedExpense((prev) => (prev === expense ? undefined : expense));
+    };
+    const onPaid = async (
+      e: React.MouseEvent<HTMLButtonElement, MouseEvent>
+    ) => {
+      e.stopPropagation();
+      const response: ResponseStatusData = await AddExpense(
+        expense,
+        ExpenseType.normal
+      );
+      if (response.status < 300) {
+        setDeletedExpense(expense);
+        setSelectedExpense(undefined);
+      }
+      onDelete(e);
+    };
+    const onDelete = async (
       e: React.MouseEvent<HTMLButtonElement, MouseEvent>
     ) => {
       e.stopPropagation();
@@ -28,17 +46,16 @@ const ExpenseCard = forwardRef<HTMLButtonElement, Props>(
         planned ? ExpenseType.planned : ExpenseType.normal
       );
       if (response.status < 300) {
-        onDelete && onDelete();
+        setDeletedExpense(expense);
+        setSelectedExpense(undefined);
       }
     };
+
     return (
       <motion.button
         ref={ref}
         layout
-        onClick={(e) => {
-          e.stopPropagation();
-          onClick && onClick();
-        }}
+        onClick={onClick}
         className={`shadow-sm ${
           planned && expense.date <= new Date()
             ? "bg-red-100 hover:bg-red-200/70"
@@ -70,7 +87,7 @@ const ExpenseCard = forwardRef<HTMLButtonElement, Props>(
             </div>
           </div>
           <div></div>
-          {details ? (
+          {selectedExpense === expense ? (
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
@@ -94,7 +111,7 @@ const ExpenseCard = forwardRef<HTMLButtonElement, Props>(
               </NavLink>
               <CustomButton
                 className="lg:w-20 w-14 text-sm lg:text-base"
-                onClick={tryDeleteExpense}
+                onClick={onDelete}
               >
                 Delete
               </CustomButton>
@@ -102,11 +119,7 @@ const ExpenseCard = forwardRef<HTMLButtonElement, Props>(
                 <CustomButton
                   className="lg:w-20 w-14 text-sm lg:text-base"
                   variant={"green"}
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    AddExpense(expense, ExpenseType.normal);
-                    tryDeleteExpense(e);
-                  }}
+                  onClick={onPaid}
                 >
                   Paid
                 </CustomButton>
@@ -122,7 +135,7 @@ const ExpenseCard = forwardRef<HTMLButtonElement, Props>(
           </p>
         </motion.div>
         <AnimatePresence mode="popLayout">
-          {details && (
+          {selectedExpense === expense && (
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}

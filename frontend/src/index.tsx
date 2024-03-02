@@ -5,6 +5,7 @@ import App from "./App";
 import { SettingsContextProvider } from "./context/SettingsContext";
 import { ExpensesContextProvider } from "./context/ExpensesContext";
 import { PopupContextProvider } from "./context/PopupContext";
+import { ExpenseHistoryContextProvider } from "./context/ExpenseHistoryContext";
 
 const root = ReactDOM.createRoot(
   document.getElementById("root") as HTMLElement
@@ -14,7 +15,9 @@ root.render(
     <SettingsContextProvider>
       <ExpensesContextProvider>
         <PopupContextProvider>
-          <App />
+          <ExpenseHistoryContextProvider>
+            <App />
+          </ExpenseHistoryContextProvider>
         </PopupContextProvider>
       </ExpensesContextProvider>
     </SettingsContextProvider>

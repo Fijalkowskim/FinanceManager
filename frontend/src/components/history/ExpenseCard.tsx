@@ -14,10 +14,11 @@ interface Props {
   details?: boolean;
   onClick?: () => void;
   onDelete?: () => void;
+  onPaid?: () => void;
 }
 const ExpenseCard = forwardRef<HTMLButtonElement, Props>(
   ({ expense, planned, details, onClick, onDelete }: Props, ref) => {
-    const { DeleteExpense } = useExpensesContext();
+    const { DeleteExpense, AddExpense } = useExpensesContext();
     const tryDeleteExpense = async (
       e: React.MouseEvent<HTMLButtonElement, MouseEvent>
     ) => {
@@ -38,7 +39,11 @@ const ExpenseCard = forwardRef<HTMLButtonElement, Props>(
           e.stopPropagation();
           onClick && onClick();
         }}
-        className="shadow-sm bg-background-50 hover:bg-background-100 w-full max-w-2xl p-3 border-background-300/50 border text-left transition-color"
+        className={`shadow-sm ${
+          planned && expense.date <= new Date()
+            ? "bg-red-100 hover:bg-red-200/70"
+            : "bg-background-50 hover:bg-background-100"
+        } w-full max-w-2xl p-3 border-background-300/50 border text-left transition-color`}
       >
         <motion.div
           layout
@@ -70,7 +75,7 @@ const ExpenseCard = forwardRef<HTMLButtonElement, Props>(
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              className="flex  items-center justify-center gap-3"
+              className="flex lg:flex-row flex-col items-center justify-center gap-1 lg:gap-3"
             >
               <NavLink
                 to={`/Finance-Manager/${planned ? "edit-planned" : "edit"}/${
@@ -78,7 +83,7 @@ const ExpenseCard = forwardRef<HTMLButtonElement, Props>(
                 }`}
               >
                 <CustomButton
-                  className="w-20"
+                  className="lg:w-20 w-14 text-sm lg:text-base"
                   variant={"primary"}
                   onClick={(e) => {
                     e.stopPropagation();
@@ -87,11 +92,22 @@ const ExpenseCard = forwardRef<HTMLButtonElement, Props>(
                   Edit
                 </CustomButton>
               </NavLink>
-              <CustomButton className="w-20" onClick={tryDeleteExpense}>
+              <CustomButton
+                className="lg:w-20 w-14 text-sm lg:text-base"
+                onClick={tryDeleteExpense}
+              >
                 Delete
               </CustomButton>
-              {planned && (
-                <CustomButton className="w-20" variant={"green"}>
+              {planned && expense.date <= new Date() && (
+                <CustomButton
+                  className="lg:w-20 w-14 text-sm lg:text-base"
+                  variant={"green"}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    AddExpense(expense, ExpenseType.normal);
+                    tryDeleteExpense(e);
+                  }}
+                >
                   Paid
                 </CustomButton>
               )}

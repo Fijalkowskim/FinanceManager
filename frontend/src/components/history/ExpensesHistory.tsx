@@ -1,72 +1,42 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { SortType } from "../../models/SortType";
-import { useExpensesContext } from "../../context/ExpensesContext";
 import { ExpenseData } from "../../models/ExpenseData";
 import ExpenseCard from "./ExpenseCard";
-
-import { AllExpensesResponseData } from "../../models/AllExpensesResponseData";
 import PageNavigation from "./PageNavigation";
 import HistoryFilters from "./HistoryFilters";
 import { NavLink } from "react-router-dom";
 import CustomButton from "../general/CustomButton";
 import { AnimatePresence, motion } from "framer-motion";
-import { ExpenseType } from "../../models/ExpenseType";
+import MessagePopup from "../general/MessagePopup";
+import { usePopupContext } from "../../context/PopupContext";
+import { useExpenses } from "../../hooks/useExpenses";
 
 export enum ExpenseHistoryType {
   Expenses,
   PlannedExpenses,
 }
 interface Props {
-  type?: ExpenseHistoryType;
+  type: ExpenseHistoryType;
 }
 
 function ExpensesHistory({ type }: Props) {
   const [category, setCategory] = useState("All");
   const [sorting, setSorting] = useState<SortType>(SortType.DateDesc);
-  const [expenses, setExpenses] = useState<ExpenseData[]>([]);
   const [page, setPage] = useState(0);
-  const [totalPages, setTotalPages] = useState(0);
+  const [totalPages] = useState(0);
   const [itemsPerPage] = useState(20);
   const [selectedExpense, setSelectedExpense] = useState<ExpenseData>();
   const [deletedExpense, setDeletedExpense] = useState<ExpenseData>();
-  const { GetExpenses } = useExpensesContext();
+  const { infoMessage, setInfoMessage } = usePopupContext();
 
-  useEffect(() => {
-    const LoadExpenses = async () => {
-      const data: AllExpensesResponseData =
-        category === "All"
-          ? await GetExpenses(
-              page,
-              itemsPerPage,
-              sorting,
-              type === ExpenseHistoryType.PlannedExpenses
-                ? ExpenseType.planned
-                : ExpenseType.normal
-            )
-          : await GetExpenses(
-              page,
-              itemsPerPage,
-              sorting,
-              type === ExpenseHistoryType.PlannedExpenses
-                ? ExpenseType.planned
-                : ExpenseType.normal,
-              category
-            );
-      setExpenses(data.expenses);
-      setTotalPages(data.totalPages);
-    };
-    LoadExpenses();
-  }, [
-    GetExpenses,
-    setExpenses,
-    setTotalPages,
-    deletedExpense,
-    sorting,
-    category,
+  const { expenses } = useExpenses({
     page,
-    type,
     itemsPerPage,
-  ]);
+    sorting,
+    type,
+    category,
+    deletedExpense,
+  });
   return (
     <div className="flex items-center justify-start flex-col gap-1 w-full overflow-hidden">
       {type === ExpenseHistoryType.PlannedExpenses && (
@@ -80,7 +50,11 @@ function ExpensesHistory({ type }: Props) {
         sorting={sorting}
         setSorting={setSorting}
       />
-      <div className="-mt-3" />
+      <div className="mt-1" />
+      <AnimatePresence>
+        {infoMessage && <MessagePopup message={infoMessage} />}
+      </AnimatePresence>
+      <div className="-mb-3" />
       {expenses.length > 0 && (
         <PageNavigation page={page} totalPages={totalPages} setPage={setPage} />
       )}
@@ -103,7 +77,12 @@ function ExpensesHistory({ type }: Props) {
               }}
               onDelete={() => {
                 setDeletedExpense(expense);
+                setInfoMessage("Expense deleted successfully");
+                setTimeout(() => {
+                  setInfoMessage("");
+                }, 2000);
               }}
+              onPaid={() => {}}
             />
           ))}
         </AnimatePresence>

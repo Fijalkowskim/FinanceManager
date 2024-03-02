@@ -164,6 +164,7 @@ export function ExpensesContextProvider({
     category?: string
   ): Promise<AllExpensesResponseData> => {
     try {
+      if (category === "All") category = undefined;
       const res = await api.get(
         `/${
           type === ExpenseType.planned ? "planned_expenses" : "expenses"

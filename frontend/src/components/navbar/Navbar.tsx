@@ -45,7 +45,7 @@ function Navbar() {
         className={`hidden flex-row items-center justify-end gap-8 lg:flex w-full`}
       >
         {navlinks.map((n) => (
-          <NavbarLink data={n} />
+          <NavbarLink key={n.to} data={n} />
         ))}
       </div>
       <motion.button
@@ -88,6 +88,7 @@ function Navbar() {
               </motion.button>
               {navlinks.map((n) => (
                 <div
+                  key={n.to}
                   onClick={() => {
                     toggleMobileMenu();
                   }}

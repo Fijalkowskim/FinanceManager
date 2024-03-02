@@ -1,25 +1,23 @@
 import React, { useEffect, useState } from "react";
 import { useExpensesContext } from "../../context/ExpensesContext";
-import { ExpenseData } from "../../models/ExpenseData";
 import { dateToMonthName } from "../../helpers/helpers";
-import dateFormat from "dateformat";
 import { DashboardData } from "../../models/DashboardData";
 import MonthChart from "./MonthChart";
 import CustomButton from "../general/CustomButton";
 import { NavLink } from "react-router-dom";
 import { GetCategoryData } from "../../categories/Categories";
 
-function MontlySpendings() {
+function MontlyExpenses() {
   const { GetMontlyExpenses, GetMontlyDashbord } = useExpensesContext();
   const [dashboardData, setDashboardData] = useState<DashboardData>();
-  const [date, setDate] = useState(new Date());
+  const [date] = useState(new Date());
   useEffect(() => {
     const LoadExpenses = async () => {
       const data = await GetMontlyDashbord(date);
       setDashboardData(data);
     };
     LoadExpenses();
-  }, [GetMontlyExpenses, setDashboardData, date]);
+  }, [GetMontlyExpenses, GetMontlyDashbord, setDashboardData, date]);
   return (
     <div className="flex flex-col items-center justify-center p-3 bg-background-50 rounded-md shadow-md max-w-full text-center">
       <h1 className="text-4xl  ">Your monthly spendings</h1>
@@ -72,4 +70,4 @@ function MontlySpendings() {
   );
 }
 
-export default MontlySpendings;
+export default MontlyExpenses;

@@ -5,7 +5,6 @@ import { useExpensesContext } from "../../context/ExpensesContext";
 import MessagePopup from "../general/MessagePopup";
 import { AnimatePresence, motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
-import { ExpenseData } from "../../models/ExpenseData";
 import { ResponseStatusData } from "../../models/ResponseStatusData";
 import { usePopupContext } from "../../context/PopupContext";
 import { ExpenseType } from "../../models/ExpenseType";
@@ -48,7 +47,7 @@ function AddExpenseForm({ planned, edit, editId }: Props) {
       }
     };
     loadExpense();
-  }, [edit, editId]);
+  }, [edit, editId, GetExpense, planned]);
 
   const submitForm = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -137,8 +136,10 @@ function AddExpenseForm({ planned, edit, editId }: Props) {
         id="category"
         className="bg-gray-50 border border-gray-300  rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-3 mb-2"
       >
-        {categories.map((category, idx) => (
-          <option value={category.name}>{category.name}</option>
+        {categories.map((category) => (
+          <option key={category.name} value={category.name}>
+            {category.name}
+          </option>
         ))}
       </select>
       <label htmlFor="date">Date</label>

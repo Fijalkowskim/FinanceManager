@@ -1,6 +1,6 @@
 import React, { ButtonHTMLAttributes, ReactNode } from "react";
 import { cn } from "../../helpers/helpers";
-import { motion } from "framer-motion";
+import { MotionProps, motion } from "framer-motion";
 import { VariantProps, cva } from "class-variance-authority";
 
 const variants = cva(
@@ -22,8 +22,12 @@ const variants = cva(
 );
 
 interface Props
-  extends ButtonHTMLAttributes<HTMLButtonElement>,
-    VariantProps<typeof variants> {
+  extends Omit<
+      ButtonHTMLAttributes<HTMLButtonElement>,
+      "onDragStart" | "onAnimationStart" | "onDrag" | "onDragEnd" | "style"
+    >,
+    VariantProps<typeof variants>,
+    MotionProps {
   parentClass?: string;
   className?: string;
   children?: ReactNode;
@@ -42,19 +46,15 @@ function CustomButton({
 }: Props) {
   return (
     <motion.button
+      {...props}
       whileHover={disableScaleAnimation ? {} : { scale: 1.03 }}
       whileTap={disableScaleAnimation ? {} : { scale: 1.01 }}
-      className={cn("", parentClass)}
+      className={cn(
+        variants({ variant, className }),
+        `${rounded ? "rounded-full" : ""}`
+      )}
     >
-      <button
-        {...props}
-        className={cn(
-          variants({ variant, className }),
-          `${rounded ? "rounded-full px-2 py-2 " : ""}`
-        )}
-      >
-        {children}
-      </button>
+      {children}
     </motion.button>
   );
 }

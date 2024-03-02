@@ -1,4 +1,4 @@
-import { ReactNode, createContext, useContext, useState } from "react";
+import { ReactNode, createContext, useContext } from "react";
 import { ExpenseData } from "../models/ExpenseData";
 import api from "../api/api";
 import { ExpenseResponseData } from "../models/ExpenseResponseData";
@@ -59,16 +59,15 @@ export function ExpensesContextProvider({
         }&pageSize=31`
       );
       if (res.data.content) {
-        const expenses: ExpenseData[] = [];
-        (res.data.content as ExpenseResponseData[]).map((data) => {
-          expenses.push({
-            id: data.id,
-            category: data.category,
-            description: data.description,
-            date: new Date(data.date),
-            cost: data.cost,
-          });
-        });
+        const expenses: ExpenseData[] = (
+          res.data.content as ExpenseResponseData[]
+        ).map((data) => ({
+          id: data.id,
+          category: data.category,
+          description: data.description,
+          date: new Date(data.date),
+          cost: data.cost,
+        }));
         return expenses;
       }
     } catch (err) {

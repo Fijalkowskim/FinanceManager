@@ -1,9 +1,7 @@
 import React, { useEffect, useState } from "react";
-import { ExpenseData } from "../../models/ExpenseData";
 import { PlannedExpensesData } from "../../models/PlannedExpensesData";
 import { NavLink } from "react-router-dom";
 import CustomButton from "../general/CustomButton";
-import ExpenseCard from "../history/ExpenseCard";
 import UpcomingExpenseCard from "./UpcomingExpenseCard";
 import { useExpensesContext } from "../../context/ExpensesContext";
 function UpcomingExpenses() {
@@ -45,7 +43,7 @@ function UpcomingExpenses() {
         <div className="text-lg text-primary-700">No planned expenses</div>
       )}
       <NavLink to="/Finance-Manager/planned">
-        <CustomButton variant={"primary"} parentClass="mt-2">
+        <CustomButton variant={"primary"} className="mt-2">
           Plan expenses
         </CustomButton>
       </NavLink>

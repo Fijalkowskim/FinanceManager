@@ -1,6 +1,4 @@
 import React, { useEffect, useState } from "react";
-import { categories } from "../../categories/Categories";
-import { IoCaretDown, IoCaretUp } from "react-icons/io5";
 import { SortType } from "../../models/SortType";
 import { useExpensesContext } from "../../context/ExpensesContext";
 import { ExpenseData } from "../../models/ExpenseData";
@@ -67,6 +65,7 @@ function ExpensesHistory({ type }: Props) {
     category,
     page,
     type,
+    itemsPerPage,
   ]);
   return (
     <div className="flex items-center justify-start flex-col gap-1 w-full overflow-hidden">

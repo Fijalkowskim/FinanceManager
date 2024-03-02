@@ -28,37 +28,46 @@ function ExpensesHistory({ type }: Props) {
   const [expenses, setExpenses] = useState<ExpenseData[]>([]);
   const [page, setPage] = useState(0);
   const [totalPages, setTotalPages] = useState(0);
-  const [itemsPerPage, setItemsPerPage] = useState(20);
+  const [itemsPerPage] = useState(20);
   const [selectedExpense, setSelectedExpense] = useState<ExpenseData>();
-
+  const [deletedExpense, setDeletedExpense] = useState<ExpenseData>();
   const { GetExpenses } = useExpensesContext();
 
-  const LoadExpenses = async () => {
-    const data: AllExpensesResponseData =
-      category === "All"
-        ? await GetExpenses(
-            page,
-            itemsPerPage,
-            sorting,
-            type === ExpenseHistoryType.PlannedExpenses
-              ? ExpenseType.planned
-              : ExpenseType.normal
-          )
-        : await GetExpenses(
-            page,
-            itemsPerPage,
-            sorting,
-            type === ExpenseHistoryType.PlannedExpenses
-              ? ExpenseType.planned
-              : ExpenseType.normal,
-            category
-          );
-    setExpenses(data.expenses);
-    setTotalPages(data.totalPages);
-  };
   useEffect(() => {
+    const LoadExpenses = async () => {
+      const data: AllExpensesResponseData =
+        category === "All"
+          ? await GetExpenses(
+              page,
+              itemsPerPage,
+              sorting,
+              type === ExpenseHistoryType.PlannedExpenses
+                ? ExpenseType.planned
+                : ExpenseType.normal
+            )
+          : await GetExpenses(
+              page,
+              itemsPerPage,
+              sorting,
+              type === ExpenseHistoryType.PlannedExpenses
+                ? ExpenseType.planned
+                : ExpenseType.normal,
+              category
+            );
+      setExpenses(data.expenses);
+      setTotalPages(data.totalPages);
+    };
     LoadExpenses();
-  }, [GetExpenses, setExpenses, setTotalPages, sorting, category, page, type]);
+  }, [
+    GetExpenses,
+    setExpenses,
+    setTotalPages,
+    deletedExpense,
+    sorting,
+    category,
+    page,
+    type,
+  ]);
   return (
     <div className="flex items-center justify-start flex-col gap-1 w-full overflow-hidden">
       {type === ExpenseHistoryType.PlannedExpenses && (
@@ -82,10 +91,10 @@ function ExpensesHistory({ type }: Props) {
         className="flex flex-col justify-start items-center w-full gap-3 mt-4 "
       >
         <AnimatePresence mode="popLayout">
-          {expenses.map((expense, idx) => (
+          {expenses.map((expense) => (
             <ExpenseCard
               expense={expense}
-              key={idx}
+              key={expense.id}
               planned={type === ExpenseHistoryType.PlannedExpenses}
               details={selectedExpense === expense}
               onClick={() => {
@@ -93,7 +102,9 @@ function ExpensesHistory({ type }: Props) {
                   prev === expense ? undefined : expense
                 );
               }}
-              onDelete={LoadExpenses}
+              onDelete={() => {
+                setDeletedExpense(expense);
+              }}
             />
           ))}
         </AnimatePresence>

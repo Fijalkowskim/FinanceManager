@@ -11,7 +11,7 @@ const variants = cva("", {
     },
   },
   defaultVariants: {
-    variant: "error",
+    variant: "success",
   },
 });
 
@@ -29,7 +29,7 @@ function MessagePopup({ className, variant, message, ...props }: Props) {
       animate={{ scale: 1 }}
       exit={{ scale: 0 }}
       className={cn(
-        "bg-action-300 p-1 rounded-md ",
+        "bg-action-300 p-1 rounded-md opacity-70",
         variants({ variant, className })
       )}
     >

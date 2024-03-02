@@ -9,6 +9,11 @@ interface PopupContextProps {
   setErrorMessage: React.Dispatch<React.SetStateAction<string>>;
   setInfoMessage: React.Dispatch<React.SetStateAction<string>>;
   clearMessages: () => void;
+  setTimeoutMessage: (
+    type: "info" | "error",
+    message: string,
+    timeout: number
+  ) => void;
 }
 const PopupContext = createContext({} as PopupContextProps);
 
@@ -23,6 +28,30 @@ export function PopupContextProvider({ children }: PopupContextProviderProps) {
     setErrorMessage("");
     setInfoMessage("");
   };
+  const setTimeoutMessage = (
+    type: "info" | "error",
+    message: string,
+    timeout: number
+  ) => {
+    switch (type) {
+      case "info":
+        setInfoMessage(message);
+        break;
+      case "error":
+        setErrorMessage(message);
+        break;
+    }
+    setTimeout(() => {
+      switch (type) {
+        case "info":
+          setInfoMessage("");
+          break;
+        case "error":
+          setErrorMessage("");
+          break;
+      }
+    }, timeout);
+  };
   return (
     <PopupContext.Provider
       value={{
@@ -31,6 +60,7 @@ export function PopupContextProvider({ children }: PopupContextProviderProps) {
         setErrorMessage,
         setInfoMessage,
         clearMessages,
+        setTimeoutMessage,
       }}
     >
       {children}

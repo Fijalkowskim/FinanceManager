@@ -8,6 +8,7 @@ import { useNavigate } from "react-router-dom";
 import { ResponseStatusData } from "../../models/ResponseStatusData";
 import { usePopupContext } from "../../context/PopupContext";
 import { ExpenseType } from "../../models/ExpenseType";
+import PopupController from "../general/PopupController";
 interface Props {
   planned?: boolean;
   edit?: boolean;
@@ -101,12 +102,7 @@ function AddExpenseForm({ planned, edit, editId }: Props) {
       </h1>
 
       <div className="w-full h-[0.1px] bg-primary-950/30 mb-2" />
-      <AnimatePresence>
-        {errorMessage !== "" && <MessagePopup message={errorMessage} />}
-        {infoMessage !== "" && (
-          <MessagePopup message={infoMessage} variant={"success"} />
-        )}
-      </AnimatePresence>
+      <PopupController />
       <label htmlFor="cost">Cost in $</label>
       <input
         min={0.01}

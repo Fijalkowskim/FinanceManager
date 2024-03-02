@@ -9,6 +9,7 @@ import { useExpensesContext } from "../../context/ExpensesContext";
 import { ResponseStatusData } from "../../models/ResponseStatusData";
 import { ExpenseType } from "../../models/ExpenseType";
 import { useExpenseHistoryContext } from "../../context/ExpenseHistoryContext";
+import { usePopupContext } from "../../context/PopupContext";
 interface Props {
   expense: ExpenseData;
   planned?: boolean;
@@ -16,6 +17,7 @@ interface Props {
 const ExpenseCard = forwardRef<HTMLButtonElement, Props>(
   ({ expense, planned }: Props, ref) => {
     const { DeleteExpense, AddExpense } = useExpensesContext();
+    const { setTimeoutMessage } = usePopupContext();
     const { selectedExpense, setSelectedExpense, setDeletedExpense } =
       useExpenseHistoryContext();
 
@@ -34,6 +36,7 @@ const ExpenseCard = forwardRef<HTMLButtonElement, Props>(
       if (response.status < 300) {
         setDeletedExpense(expense);
         setSelectedExpense(undefined);
+        setTimeoutMessage("info", "Expense added to history", 3000);
       }
       onDelete(e);
     };
@@ -48,6 +51,11 @@ const ExpenseCard = forwardRef<HTMLButtonElement, Props>(
       if (response.status < 300) {
         setDeletedExpense(expense);
         setSelectedExpense(undefined);
+        setTimeoutMessage(
+          "error",
+          `${planned ? "Planned expense" : "Expense"} deleted`,
+          3000
+        );
       }
     };
 

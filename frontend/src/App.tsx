@@ -25,7 +25,6 @@ function App() {
   return (
     <div className="overflow-x-hidden">
       <BrowserRouter>
-        <PopupController />
         <Navbar />
         <div className="mb-16" />
         <Routes>

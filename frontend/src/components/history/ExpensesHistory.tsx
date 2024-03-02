@@ -10,6 +10,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import MessagePopup from "../general/MessagePopup";
 import { usePopupContext } from "../../context/PopupContext";
 import { useExpenses } from "../../hooks/useExpenses";
+import PopupController from "../general/PopupController";
 
 export enum ExpenseHistoryType {
   Expenses,
@@ -20,7 +21,6 @@ interface Props {
 }
 
 function ExpensesHistory({ type }: Props) {
-  const { infoMessage, setInfoMessage } = usePopupContext();
   const { expenses } = useExpenses(type);
 
   return (
@@ -32,9 +32,7 @@ function ExpensesHistory({ type }: Props) {
       )}
       <HistoryFilters />
       <div className="mt-1" />
-      <AnimatePresence>
-        {infoMessage && <MessagePopup message={infoMessage} />}
-      </AnimatePresence>
+      <PopupController />
       <div className="-mb-3" />
       {expenses.length > 0 && <PageNavigation />}
       <div className="-mb-3" />

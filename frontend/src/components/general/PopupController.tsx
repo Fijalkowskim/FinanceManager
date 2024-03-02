@@ -1,14 +1,25 @@
 import React, { useEffect } from "react";
-import { useLocation } from "react-router-dom";
 import { usePopupContext } from "../../context/PopupContext";
+import { AnimatePresence } from "framer-motion";
+import MessagePopup from "./MessagePopup";
 
 function PopupController() {
-  const location = useLocation();
-  const { clearMessages } = usePopupContext();
+  const { clearMessages, infoMessage, errorMessage } = usePopupContext();
+
   useEffect(() => {
     clearMessages();
-  }, [location]);
-  return <div className="hidden" />;
+  }, []);
+
+  return (
+    <>
+      <AnimatePresence>
+        {infoMessage && <MessagePopup message={infoMessage} />}
+        {errorMessage && (
+          <MessagePopup variant={"error"} message={errorMessage} />
+        )}
+      </AnimatePresence>
+    </>
+  );
 }
 
 export default PopupController;

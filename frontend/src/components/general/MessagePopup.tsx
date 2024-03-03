@@ -1,6 +1,6 @@
 import { VariantProps, cva } from "class-variance-authority";
-import { AnimatePresence, motion } from "framer-motion";
-import React, { HTMLAttributes, ReactNode } from "react";
+import { motion } from "framer-motion";
+import React, { HTMLAttributes } from "react";
 import { cn } from "../../helpers/helpers";
 
 const variants = cva("", {

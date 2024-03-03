@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 import { AllExpensesResponseData } from "../models/AllExpensesResponseData";
-import { SortType } from "../models/SortType";
 import { ExpenseHistoryType } from "../components/history/ExpensesHistory";
 import { useExpensesContext } from "../context/ExpensesContext";
 import { ExpenseData } from "../models/ExpenseData";

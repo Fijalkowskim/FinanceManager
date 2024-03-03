@@ -2,8 +2,7 @@ import React, { useEffect, useState } from "react";
 import { categories } from "../../categories/Categories";
 import CustomButton from "../general/CustomButton";
 import { useExpensesContext } from "../../context/ExpensesContext";
-import MessagePopup from "../general/MessagePopup";
-import { AnimatePresence, motion } from "framer-motion";
+import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { ResponseStatusData } from "../../models/ResponseStatusData";
 import { usePopupContext } from "../../context/PopupContext";
@@ -24,13 +23,7 @@ function AddExpenseForm({ planned, edit, editId }: Props) {
   const navigate = useNavigate();
   const { AddExpense, GetExpense, UpdateExpense } = useExpensesContext();
 
-  const {
-    errorMessage,
-    infoMessage,
-    setErrorMessage,
-    setInfoMessage,
-    clearMessages,
-  } = usePopupContext();
+  const { setErrorMessage, setInfoMessage, clearMessages } = usePopupContext();
 
   useEffect(() => {
     const loadExpense = async () => {

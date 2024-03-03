@@ -1,14 +1,10 @@
-import React, { useState } from "react";
-import { SortType } from "../../models/SortType";
-import { ExpenseData } from "../../models/ExpenseData";
+import React from "react";
 import ExpenseCard from "./ExpenseCard";
 import PageNavigation from "./PageNavigation";
 import HistoryFilters from "./HistoryFilters";
 import { NavLink } from "react-router-dom";
 import CustomButton from "../general/CustomButton";
 import { AnimatePresence, motion } from "framer-motion";
-import MessagePopup from "../general/MessagePopup";
-import { usePopupContext } from "../../context/PopupContext";
 import { useExpenses } from "../../hooks/useExpenses";
 import PopupController from "../general/PopupController";
 

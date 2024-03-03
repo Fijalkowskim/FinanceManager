@@ -1,11 +1,5 @@
 import React, { useEffect } from "react";
-import {
-  BrowserRouter,
-  Routes,
-  Route,
-  Navigate,
-  useLocation,
-} from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import Dashboard from "./pages/Dashboard";
 import Navbar from "./components/navbar/Navbar";
 import Footer from "./components/footer/Footer";
@@ -14,7 +8,6 @@ import Analize from "./pages/Analize";
 import History from "./pages/History";
 import AddExpense from "./pages/AddExpense";
 import PlannedExpenses from "./pages/PlannedExpenses";
-import PopupController from "./components/general/PopupController";
 
 function App() {
   const { disableScroll } = useSettingsContext();

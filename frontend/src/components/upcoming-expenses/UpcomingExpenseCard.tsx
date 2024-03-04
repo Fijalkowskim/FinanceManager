@@ -1,5 +1,5 @@
 import React from "react";
-import { ExpenseData } from "../../models/ExpenseData";
+import { ExpenseData } from "../../models/expenses/ExpenseData";
 import dateFormat from "dateformat";
 import { motion } from "framer-motion";
 interface Props {

@@ -1,9 +1,9 @@
 import { useState, useEffect } from "react";
-import { AllExpensesResponseData } from "../models/AllExpensesResponseData";
+import { AllExpensesResponseData } from "../models/expenses/AllExpensesResponseData";
 import { ExpenseHistoryType } from "../components/history/ExpensesHistory";
 import { useExpensesContext } from "../context/ExpensesContext";
-import { ExpenseData } from "../models/ExpenseData";
-import { ExpenseType } from "../models/ExpenseType";
+import { ExpenseData } from "../models/expenses/ExpenseData";
+import { ExpenseType } from "../models/expenses/ExpenseType";
 import { useExpenseHistoryContext } from "../context/ExpenseHistoryContext";
 
 export const useExpenses = (historyType: ExpenseHistoryType) => {

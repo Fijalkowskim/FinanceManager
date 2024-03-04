@@ -1,4 +1,4 @@
-import { CategoryData } from "../models/CategoryData";
+import { CategoryData } from "../models/categories/CategoryData";
 import { MdOutlineLocalGroceryStore } from "react-icons/md";
 import { LuUtilityPole } from "react-icons/lu";
 import { MdEmojiTransportation } from "react-icons/md";

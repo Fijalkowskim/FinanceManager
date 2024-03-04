@@ -1,4 +1,4 @@
-import { ExpenseResponseData } from "./ExpenseResponseData";
+import { ExpenseResponseData } from "../expenses/ExpenseResponseData";
 
 export interface DashboardData {
   monthlySpending: number;

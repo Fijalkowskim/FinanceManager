@@ -1,13 +1,13 @@
 import React, { forwardRef } from "react";
-import { ExpenseData } from "../../models/ExpenseData";
-import { GetCategoryData } from "../../categories/Categories";
+import { ExpenseData } from "../../models/expenses/ExpenseData";
+import { GetCategoryData } from "../../data/Categories";
 import dateFormat from "dateformat";
 import { AnimatePresence, motion } from "framer-motion";
 import CustomButton from "../general/CustomButton";
 import { NavLink } from "react-router-dom";
 import { useExpensesContext } from "../../context/ExpensesContext";
-import { ResponseStatusData } from "../../models/ResponseStatusData";
-import { ExpenseType } from "../../models/ExpenseType";
+import { ResponseStatusData } from "../../models/api/ResponseStatusData";
+import { ExpenseType } from "../../models/expenses/ExpenseType";
 import { useExpenseHistoryContext } from "../../context/ExpenseHistoryContext";
 import { usePopupContext } from "../../context/PopupContext";
 interface Props {

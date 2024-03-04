@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from "react";
-import { categories } from "../../categories/Categories";
+import { categories } from "../../data/Categories";
 import CustomButton from "../general/CustomButton";
 import { useExpensesContext } from "../../context/ExpensesContext";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
-import { ResponseStatusData } from "../../models/ResponseStatusData";
+import { ResponseStatusData } from "../../models/api/ResponseStatusData";
 import { usePopupContext } from "../../context/PopupContext";
-import { ExpenseType } from "../../models/ExpenseType";
+import { ExpenseType } from "../../models/expenses/ExpenseType";
 import PopupController from "../general/PopupController";
 interface Props {
   planned?: boolean;

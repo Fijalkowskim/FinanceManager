@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { useExpensesContext } from "../../context/ExpensesContext";
 import { dateToMonthName } from "../../helpers/helpers";
-import { DashboardData } from "../../models/DashboardData";
+import { DashboardData } from "../../models/dashboard/DashboardData";
 import MonthChart from "./MonthChart";
 import CustomButton from "../general/CustomButton";
 import { NavLink } from "react-router-dom";
-import { GetCategoryData } from "../../categories/Categories";
+import { GetCategoryData } from "../../data/Categories";
 
 function MontlyExpenses() {
   const { GetMontlyExpenses, GetMontlyDashbord } = useExpensesContext();

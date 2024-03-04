@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { PlannedExpensesData } from "../../models/PlannedExpensesData";
+import { PlannedExpensesData } from "../../models/expenses/PlannedExpensesData";
 import { NavLink } from "react-router-dom";
 import CustomButton from "../general/CustomButton";
 import UpcomingExpenseCard from "./UpcomingExpenseCard";

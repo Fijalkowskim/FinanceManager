@@ -7,7 +7,7 @@ import {
   ChartData,
 } from "chart.js";
 import { Pie } from "react-chartjs-2";
-import { GetCategoryData } from "../../categories/Categories";
+import { GetCategoryData } from "../../data/Categories";
 ChartJS.register(ArcElement, Tooltip, Legend);
 
 interface Props {

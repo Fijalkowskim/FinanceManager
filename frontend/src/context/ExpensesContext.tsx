@@ -1,15 +1,15 @@
 import { ReactNode, createContext, useContext } from "react";
-import { ExpenseData } from "../models/ExpenseData";
+import { ExpenseData } from "../models/expenses/ExpenseData";
 import api from "../api/api";
-import { ExpenseResponseData } from "../models/ExpenseResponseData";
-import { DashboardData } from "../models/DashboardData";
-import { SortType } from "../models/SortType";
-import { AllExpensesResponseData } from "../models/AllExpensesResponseData";
-import { ExpenseRequestData } from "../models/ExpenseRequestData";
+import { ExpenseResponseData } from "../models/expenses/ExpenseResponseData";
+import { DashboardData } from "../models/dashboard/DashboardData";
+import { SortType } from "../models/filtering/SortType";
+import { AllExpensesResponseData } from "../models/expenses/AllExpensesResponseData";
+import { ExpenseRequestData } from "../models/expenses/ExpenseRequestData";
 import dateFormat from "dateformat";
-import { ResponseStatusData } from "../models/ResponseStatusData";
-import { ExpenseType } from "../models/ExpenseType";
-import { PlannedExpensesData } from "../models/PlannedExpensesData";
+import { ResponseStatusData } from "../models/api/ResponseStatusData";
+import { ExpenseType } from "../models/expenses/ExpenseType";
+import { PlannedExpensesData } from "../models/expenses/PlannedExpensesData";
 interface ExpensesContextProviderProps {
   children: ReactNode;
 }

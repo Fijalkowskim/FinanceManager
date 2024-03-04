@@ -1,6 +1,6 @@
 import React from "react";
-import { categories } from "../../categories/Categories";
-import { SortType } from "../../models/SortType";
+import { categories } from "../../data/Categories";
+import { SortType } from "../../models/filtering/SortType";
 import { IoCaretDown, IoCaretUp } from "react-icons/io5";
 import { useExpenseHistoryContext } from "../../context/ExpenseHistoryContext";
 
@@ -8,7 +8,7 @@ function HistoryFilters() {
   const { category, setCategory, sorting, setSorting } =
     useExpenseHistoryContext();
   return (
-    <div className="flex items-end justify-center gap-4 w-full">
+    <div className="flex items-end justify-center gap-4 w-full flex-wrap">
       <div className="flex flex-col items-start justify-center flex-shrink-0">
         <p className="ml-2 text-sm">Category:</p>
         <select

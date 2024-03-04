@@ -1,7 +1,7 @@
 import { ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
 
-const monthNames = [
+export const monthNames = [
   "January",
   "Feburary",
   "March",

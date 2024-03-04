@@ -27,14 +27,14 @@ public class AnalyticsController {
         }
         return ResponseEntity.ok().body(analyticsService.getDailyAnalytics(days, category));
     }
-    @GetMapping("/years/{years}")
+    @GetMapping("/year/{year}")
     public ResponseEntity<AnalyticsDashboardData>getAnnualAnalytics (
-            @PathVariable int years,
+            @PathVariable int year,
             @RequestParam(name = "category", defaultValue = "",required = false ) String category) {
-        if(years < 0){
+        if(year < 0){
             return ResponseEntity.badRequest().build();
         }
-        return ResponseEntity.ok().body(analyticsService.getAnnualAnalytics(years, category));
+        return ResponseEntity.ok().body(analyticsService.getAnnualAnalytics(year, category));
     }
     @GetMapping("/yearsWithExpenses")
     public ResponseEntity<List<Integer>>getYearsWithExpenses(){

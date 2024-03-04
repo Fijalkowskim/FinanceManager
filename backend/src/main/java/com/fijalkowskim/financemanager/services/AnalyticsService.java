@@ -9,7 +9,6 @@ import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.math.BigDecimal;
 import java.time.*;
 import java.util.*;
 
@@ -27,7 +26,7 @@ public class AnalyticsService {
     }
     public AnalyticsDashboardData getDailyAnalytics(int days, String category) {
         LocalDateTime endDate = LocalDateTime.now();
-        LocalDateTime startDate = endDate.minusDays(days).withHour(0).withMinute(0).withSecond(1);
+        LocalDateTime startDate = endDate.minusDays(days).withHour(0).withMinute(0).withSecond(0);
 
         List<Expense> expenses = getExpensesFromTimeRange(startDate,endDate,category);
 
@@ -48,14 +47,16 @@ public class AnalyticsService {
             costsPerDateList.add(costPerDate);
         }
         costsPerDateList.sort(Comparator.comparing(CostPerDate::getDate));
+        analyticsDashboardData.setDashboardType("days");
         analyticsDashboardData.setCostsPerDate(costsPerDateList);
         analyticsDashboardData.setCostsPerMonth(new ArrayList<>());
+        analyticsDashboardData.setStartDate(startDate);
+        analyticsDashboardData.setEndDate(endDate);
         return analyticsDashboardData;
     }
-    public AnalyticsDashboardData getAnnualAnalytics(int years, String category) {
-        int targetedYear = LocalDateTime.now().minusYears(years).getYear();
-        LocalDateTime endDate = LocalDateTime.of(targetedYear, Month.DECEMBER, 31, 23, 59, 59);
-        LocalDateTime startDate = LocalDateTime.of(targetedYear, Month.JANUARY, 1, 0, 0, 0);
+    public AnalyticsDashboardData getAnnualAnalytics(int year, String category) {
+        LocalDateTime endDate = LocalDateTime.of(year, Month.DECEMBER, 31, 23, 59, 59);
+        LocalDateTime startDate = LocalDateTime.of(year, Month.JANUARY, 1, 0, 0, 0);
 
         List<Expense> expenses = getExpensesFromTimeRange(startDate, endDate, category);
 
@@ -77,8 +78,11 @@ public class AnalyticsService {
         }
 
         costsPerMonthList.sort(Comparator.comparing(CostPerMonth::getMonth));
+        analyticsDashboardData.setDashboardType("year");
         analyticsDashboardData.setCostsPerMonth(costsPerMonthList);
         analyticsDashboardData.setCostsPerDate(new ArrayList<>());
+        analyticsDashboardData.setStartDate(startDate);
+        analyticsDashboardData.setEndDate(endDate);
         return analyticsDashboardData;
     }
     private List<Expense> getExpensesFromTimeRange(LocalDateTime startDate, LocalDateTime endDate, String category){
@@ -86,4 +90,5 @@ public class AnalyticsService {
                 expenseRepository.findAllByDateBetweenOrderByDateAsc(startDate, endDate):
                 expenseRepository.findAllByCategoryAndDateBetweenOrderByDateAsc(category,startDate,endDate);
     }
+
 }

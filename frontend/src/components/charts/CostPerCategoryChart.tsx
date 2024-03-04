@@ -8,11 +8,12 @@ import {
 } from "chart.js";
 import { Pie } from "react-chartjs-2";
 import { GetCategoryData } from "../../data/Categories";
+import { costPerCategory } from "../../models/analytics/CostPerCategory";
 ChartJS.register(ArcElement, Tooltip, Legend);
 
 interface Props {
   title?: string;
-  costPerCategory: [{ category: string; cost: number }];
+  costPerCategory: costPerCategory[];
 }
 
 interface ChartDataWithDatasets extends ChartData<"pie", number[], unknown> {
@@ -52,7 +53,7 @@ function CostPerCategoryChart({ title, costPerCategory }: Props) {
     setChartData(newData);
   }, costPerCategory);
   return (
-    <div className="aspect-square w-[9999px] lg:max-w-lg max-w-[100%] flex-shrink flex items-center justify-center">
+    <>
       {chartData && (
         <Pie
           data={chartData}
@@ -60,7 +61,7 @@ function CostPerCategoryChart({ title, costPerCategory }: Props) {
           options={{ plugins: { legend: legendOptions } }}
         />
       )}
-    </div>
+    </>
   );
 }
 

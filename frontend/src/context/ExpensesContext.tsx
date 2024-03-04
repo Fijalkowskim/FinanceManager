@@ -2,7 +2,7 @@ import { ReactNode, createContext, useContext } from "react";
 import { ExpenseData } from "../models/expenses/ExpenseData";
 import api from "../api/api";
 import { ExpenseResponseData } from "../models/expenses/ExpenseResponseData";
-import { DashboardData } from "../models/dashboard/DashboardData";
+import { DashboardData } from "../models/analytics/DashboardData";
 import { SortType } from "../models/filtering/SortType";
 import { AllExpensesResponseData } from "../models/expenses/AllExpensesResponseData";
 import { ExpenseRequestData } from "../models/expenses/ExpenseRequestData";

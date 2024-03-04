@@ -56,11 +56,16 @@ public class AnalyticsService {
         analyticsDashboardData.setCostsPerDate(costsPerDateList);
 
         //Calculate cost per category
-        Pair<List<CostPerCategory>,CostPerCategory> calculatedCategoriesData =
-                expenseService.calculateCostsPerCategoryForMonth(expenseRepository.calculateCostsPerCategoryBetweenDates(startDate,endDate));
-        analyticsDashboardData.setCostsPerCategory(calculatedCategoriesData.getFirst());
-        analyticsDashboardData.setTopCategory(calculatedCategoriesData.getSecond());
-
+        if(category.isEmpty()) {
+            Pair<List<CostPerCategory>, CostPerCategory> calculatedCategoriesData =
+                    expenseService.calculateCostsPerCategoryForMonth(expenseRepository.calculateCostsPerCategoryBetweenDates(startDate, endDate));
+            analyticsDashboardData.setCostsPerCategory(calculatedCategoriesData.getFirst());
+            analyticsDashboardData.setTopCategory(calculatedCategoriesData.getSecond());
+        }
+        else{
+            analyticsDashboardData.setCostsPerCategory(new ArrayList<>());
+            analyticsDashboardData.setTopCategory(null);
+        }
         return analyticsDashboardData;
     }
     public AnalyticsDashboardData getAnnualAnalytics(int year, String category) {
@@ -95,11 +100,15 @@ public class AnalyticsService {
         analyticsDashboardData.setCostsPerMonth(costsPerMonthList);
 
         //Calculate cost per category
-        Pair<List<CostPerCategory>,CostPerCategory> calculatedCategoriesData =
-                expenseService.calculateCostsPerCategoryForMonth(expenseRepository.calculateCostsPerCategoryBetweenDates(startDate,endDate));
-        analyticsDashboardData.setCostsPerCategory(calculatedCategoriesData.getFirst());
-        analyticsDashboardData.setTopCategory(calculatedCategoriesData.getSecond());
-
+        if(category.isEmpty()) {
+            Pair<List<CostPerCategory>, CostPerCategory> calculatedCategoriesData =
+                    expenseService.calculateCostsPerCategoryForMonth(expenseRepository.calculateCostsPerCategoryBetweenDates(startDate, endDate));
+            analyticsDashboardData.setCostsPerCategory(calculatedCategoriesData.getFirst());
+            analyticsDashboardData.setTopCategory(calculatedCategoriesData.getSecond());
+        } else{
+            analyticsDashboardData.setCostsPerCategory(new ArrayList<>());
+            analyticsDashboardData.setTopCategory(null);
+        }
         return analyticsDashboardData;
     }
     private List<Expense> getExpensesFromTimeRange(LocalDateTime startDate, LocalDateTime endDate, String category){

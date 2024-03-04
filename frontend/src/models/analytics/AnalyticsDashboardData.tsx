@@ -1,3 +1,4 @@
+import { costPerCategory } from "./CostPerCategory";
 import { CostPerDate } from "./CostPerDate";
 import { CostPerMonth } from "./CostPerMonth";
 
@@ -7,4 +8,6 @@ export interface AnalyticsDashboardData {
   endDate: Date;
   costsPerDate: CostPerDate[];
   costsPerMonth: CostPerMonth[];
+  costsPerCategory: costPerCategory[];
+  topCategory: costPerCategory;
 }

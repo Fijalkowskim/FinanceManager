@@ -55,18 +55,21 @@ export function AnalyticsContextProvider({
           category === "All" ? "" : category
         }`
       );
-      if (res.data) {
-        const data: AnalyticsDashboardData = {
-          dashboardType: res.data.dashboardType,
-          startDate: new Date(res.data.startDate),
-          endDate: new Date(res.data.endDate),
-          costsPerDate: res.data.costsPerDate.map((item: any) => ({
+      const data = res.data;
+      if (data) {
+        const analyticsDashboardData: AnalyticsDashboardData = {
+          dashboardType: data.dashboardType,
+          startDate: new Date(data.startDate),
+          endDate: new Date(data.endDate),
+          costsPerDate: data.costsPerDate.map((item: any) => ({
             cost: item.cost,
             date: new Date(item.date),
           })),
-          costsPerMonth: res.data.costsPerMonth,
+          costsPerMonth: data.costsPerMonth,
+          costsPerCategory: data.costsPerCategory,
+          topCategory: data.topCateogry,
         };
-        return data;
+        return analyticsDashboardData;
       }
     } catch (err) {
       console.log(err);

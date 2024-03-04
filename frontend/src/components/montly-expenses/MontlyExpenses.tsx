@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useExpensesContext } from "../../context/ExpensesContext";
 import { dateToMonthName } from "../../helpers/helpers";
-import { DashboardData } from "../../models/dashboard/DashboardData";
+import { DashboardData } from "../../models/analytics/DashboardData";
 import CostPerCategoryChart from "../charts/CostPerCategoryChart";
 import CustomButton from "../general/CustomButton";
 import { NavLink } from "react-router-dom";
@@ -52,10 +52,12 @@ function MontlyExpenses() {
                 {dashboardData && dashboardData?.topCategory.cost.toFixed(2)}$
               </p>
             </div>
-            <CostPerCategoryChart
-              title={dateToMonthName(date)}
-              costPerCategory={dashboardData?.costPerCategory}
-            />
+            <div className="aspect-square w-[9999px] lg:max-w-lg max-w-[100%] flex-shrink flex items-center justify-center">
+              <CostPerCategoryChart
+                title={dateToMonthName(date)}
+                costPerCategory={dashboardData?.costPerCategory}
+              />
+            </div>
           </>
         ) : (
           <p className="py-20 text-center">No data yet.</p>

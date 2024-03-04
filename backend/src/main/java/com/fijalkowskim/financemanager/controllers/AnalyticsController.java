@@ -6,6 +6,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @CrossOrigin("http://localhost:3000")
 @RequestMapping("/api/analytics")
@@ -33,5 +35,9 @@ public class AnalyticsController {
             return ResponseEntity.badRequest().build();
         }
         return ResponseEntity.ok().body(analyticsService.getAnnualAnalytics(years, category));
+    }
+    @GetMapping("/yearsWithExpenses")
+    public ResponseEntity<List<Integer>>getYearsWithExpenses(){
+        return ResponseEntity.ok().body(analyticsService.getYearsWithExpenses());
     }
 }

@@ -22,6 +22,9 @@ public class AnalyticsService {
         this.expenseRepository = expenseRepository;
     }
 
+    public List<Integer> getYearsWithExpenses(){
+        return expenseRepository.findDistinctYearsWithExpenses();
+    }
     public AnalyticsDashboardData getDailyAnalytics(int days, String category) {
         LocalDateTime endDate = LocalDateTime.now();
         LocalDateTime startDate = endDate.minusDays(days).withHour(0).withMinute(0).withSecond(1);

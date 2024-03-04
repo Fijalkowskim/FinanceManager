@@ -31,7 +31,7 @@ const legendOptions = {
     padding: 10,
   },
 };
-function MonthChart({ title, costPerCategory }: Props) {
+function CostPerCategoryChart({ title, costPerCategory }: Props) {
   const [chartData, setChartData] = useState<ChartDataWithDatasets>();
   useEffect(() => {
     const newData: ChartDataWithDatasets = {
@@ -64,4 +64,4 @@ function MonthChart({ title, costPerCategory }: Props) {
   );
 }
 
-export default MonthChart;
+export default CostPerCategoryChart;

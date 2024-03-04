@@ -9,7 +9,9 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.List;
 
 @Repository
@@ -42,4 +44,7 @@ public interface ExpenseRepository extends JpaRepository<Expense, Long> {
 
     @Query("SELECT DISTINCT YEAR(e.date) FROM Expense e ORDER BY YEAR(e.date) DESC")
     List<Integer> findDistinctYearsWithExpenses();
+
+    @Query("SELECT e.category, SUM(e.cost) FROM Expense e WHERE e.date >= :startDate AND e.date <= :endDate GROUP BY e.category")
+    List<Object[]> calculateCostsPerCategoryBetweenDates(@Param("startDate") LocalDateTime startDate, @Param("endDate") LocalDateTime endDate);
 }

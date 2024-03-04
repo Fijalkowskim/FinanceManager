@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useExpensesContext } from "../../context/ExpensesContext";
 import { dateToMonthName } from "../../helpers/helpers";
 import { DashboardData } from "../../models/dashboard/DashboardData";
-import MonthChart from "./MonthChart";
+import CostPerCategoryChart from "../charts/CostPerCategoryChart";
 import CustomButton from "../general/CustomButton";
 import { NavLink } from "react-router-dom";
 import { GetCategoryData } from "../../data/Categories";
@@ -52,7 +52,7 @@ function MontlyExpenses() {
                 {dashboardData && dashboardData?.topCategory.cost.toFixed(2)}$
               </p>
             </div>
-            <MonthChart
+            <CostPerCategoryChart
               title={dateToMonthName(date)}
               costPerCategory={dashboardData?.costPerCategory}
             />

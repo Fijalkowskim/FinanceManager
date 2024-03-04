@@ -11,5 +11,6 @@ public class AnalyticsDashboardData {
     LocalDateTime endDate;
     List<CostPerDate> costsPerDate;
     List<CostPerMonth> costsPerMonth;
-
+    List<CostPerCategory> costsPerCategory;
+    CostPerCategory topCategory;
 }

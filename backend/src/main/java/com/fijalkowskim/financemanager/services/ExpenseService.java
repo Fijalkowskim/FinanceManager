@@ -102,7 +102,8 @@ public class ExpenseService {
         double monthlySpending = expenseRepository.calculateTotalSpendingForMonth(year, month);
         Expense topExpense = expenseRepository.findTopExpenseForMonth(year, month);
 
-        Pair<List<CostPerCategory>,CostPerCategory> calculatedCategoriesData =  calculateCostsPerCategoryForMonth(year, month);
+        Pair<List<CostPerCategory>,CostPerCategory> calculatedCategoriesData =
+                calculateCostsPerCategoryForMonth(expenseRepository.calculateCostsPerCategoryForMonth(year, month));
         DashboardData dashboardData = new DashboardData();
         dashboardData.setMonthlySpending(monthlySpending);
         dashboardData.setCostsPerCategory(calculatedCategoriesData.getFirst());
@@ -112,17 +113,13 @@ public class ExpenseService {
 
         return dashboardData;
     }
-    public Pair<List<CostPerCategory>,CostPerCategory> calculateCostsPerCategoryForMonth(int year, int month) {
-        List<Object[]> results = expenseRepository.calculateCostsPerCategoryForMonth(year, month);
-
-        List <CostPerCategory> costsPerCategory = new ArrayList<CostPerCategory>();
+    public Pair<List<CostPerCategory>,CostPerCategory> calculateCostsPerCategoryForMonth(List<Object[]> costPerCategoryQuery) {
+        List <CostPerCategory> costsPerCategory = new ArrayList<>();
         CostPerCategory topCategory = null;
 
-
-        for (Object[] result : results) {
+        for (Object[] result : costPerCategoryQuery) {
             String category = (String) result[0];
             double totalCost = (Double) result[1];
-
 
             CostPerCategory costPerCategory = new CostPerCategory();
             costPerCategory.setCategory(category);

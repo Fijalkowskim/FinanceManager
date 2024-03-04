@@ -75,16 +75,18 @@ export default function TimePeriodExpensesChart({
         ],
       };
     } else {
+      const monthsArray: number[] = [...Array(12).keys()];
       newChartData = {
-        labels: analyticsDashboardData.costsPerMonth.map((month) =>
-          monthIndexToName(month.month - 1)
-        ),
+        labels: monthsArray.map((month) => monthIndexToName(month)),
         datasets: [
           {
             label: "Cost in $",
-            data: analyticsDashboardData.costsPerMonth.map(
-              (month) => month.cost
-            ),
+            data: monthsArray.map((month) => {
+              const found = analyticsDashboardData.costsPerMonth.find(
+                (cost) => cost.month === month + 1
+              );
+              return found ? found.cost : 0;
+            }),
             backgroundColor: chartBarColor,
           },
         ],

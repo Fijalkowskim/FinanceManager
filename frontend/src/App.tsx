@@ -8,6 +8,7 @@ import Analize from "./pages/Analize";
 import History from "./pages/History";
 import AddExpense from "./pages/AddExpense";
 import PlannedExpenses from "./pages/PlannedExpenses";
+import ScrollToTop from "./components/general/ScrollToTop";
 
 function App() {
   const { disableScroll } = useSettingsContext();
@@ -18,6 +19,7 @@ function App() {
   return (
     <div className="overflow-x-hidden">
       <BrowserRouter>
+        <ScrollToTop />
         <Navbar />
         <div className="mb-16" />
         <Routes>

@@ -21,6 +21,7 @@ ChartJS.register(CategoryScale, LinearScale, BarElement, Tooltip, Legend);
 
 export const options = {
   responsive: true,
+  maintainAspectRatio: false,
   plugins: {
     legend: {
       position: "top" as const,
@@ -29,7 +30,7 @@ export const options = {
   },
 };
 
-const labels = monthNames;
+const chartBarColor = "#1f83e0";
 
 interface Props {
   analyticsDashboardData: AnalyticsDashboardData;
@@ -69,7 +70,7 @@ export default function TimePeriodExpensesChart({
               );
               return found ? found.cost : 0;
             }),
-            backgroundColor: "blue",
+            backgroundColor: chartBarColor,
           },
         ],
       };
@@ -84,7 +85,7 @@ export default function TimePeriodExpensesChart({
             data: analyticsDashboardData.costsPerMonth.map(
               (month) => month.cost
             ),
-            backgroundColor: "blue",
+            backgroundColor: chartBarColor,
           },
         ],
       };
@@ -93,9 +94,13 @@ export default function TimePeriodExpensesChart({
     setChartData(newChartData);
   }, [analyticsDashboardData]);
   return (
-    <div className="w-full max-w-xl">
+    <div className="w-full h-full">
       {chartData ? (
-        <Bar options={options} data={chartData} />
+        <Bar
+          options={options}
+          data={chartData}
+          style={{ width: "100%", height: "100%" }}
+        />
       ) : (
         <p>No chart data available</p>
       )}

@@ -39,8 +39,6 @@ function AnalyticsFilter() {
           id="category"
           className="cursor-pointer bg-background-50 hover:bg-background-100 transition-all border border-background-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-1 w-[10rem]"
         >
-          <option value={"All"}>All</option>
-
           {analyticsRanges.map((range, idx) => (
             <option key={idx} value={range.filterText}>
               {range.filterText}

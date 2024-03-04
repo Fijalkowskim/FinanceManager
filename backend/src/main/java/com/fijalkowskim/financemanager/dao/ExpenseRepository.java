@@ -23,6 +23,11 @@ public interface ExpenseRepository extends JpaRepository<Expense, Long> {
     Page<Expense> findAllByCategoryOrderByCostDesc(String category,Pageable pageable);
     Page<Expense> findAllByCategoryOrderByCostAsc(String category,Pageable pageable);
     Page<Expense> findAllByDateBetweenOrderByDateDesc(LocalDateTime start, LocalDateTime end, Pageable pageable);
+    Page<Expense> findAllByDateBetweenOrderByDateAsc(LocalDateTime start, LocalDateTime end, Pageable pageable);
+    List<Expense> findAllByDateBetweenOrderByDateDesc(LocalDateTime start, LocalDateTime end);
+    List<Expense> findAllByDateBetweenOrderByDateAsc(LocalDateTime start, LocalDateTime end);
+    List<Expense> findAllByCategoryAndDateBetweenOrderByDateDesc(String category, LocalDateTime start, LocalDateTime end);
+    List<Expense> findAllByCategoryAndDateBetweenOrderByDateAsc(String category, LocalDateTime start, LocalDateTime end);
     @Query("SELECT SUM(e.cost) FROM Expense e WHERE YEAR(e.date) = :year AND MONTH(e.date) = :month")
     Double calculateTotalSpendingForMonth(@Param("year") int year, @Param("month") int month);
 

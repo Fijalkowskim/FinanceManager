@@ -19,7 +19,7 @@ import java.util.*;
 @Service
 @Transactional
 public class PlannedExpenseService {
-    private PlannedExpenseRepository plannedExpenseRepository;
+    private final PlannedExpenseRepository plannedExpenseRepository;
 
     @Autowired
     public PlannedExpenseService(PlannedExpenseRepository plannedExpenseRepository) {

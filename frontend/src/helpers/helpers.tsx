@@ -1,6 +1,21 @@
 import { ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
 
+const monthNames = [
+  "January",
+  "Feburary",
+  "March",
+  "April",
+  "May",
+  "June",
+  "July",
+  "August",
+  "September",
+  "October",
+  "November",
+  "December",
+];
+
 export const cn = (...inputs: ClassValue[]) => {
   return twMerge(clsx(inputs));
 };
@@ -16,19 +31,8 @@ export const compareDates = (date1: Date, date2: Date): boolean => {
   );
 };
 export const dateToMonthName = (date: Date) => {
-  const monthNames = [
-    "January",
-    "Feburary",
-    "March",
-    "April",
-    "May",
-    "June",
-    "July",
-    "August",
-    "September",
-    "October",
-    "November",
-    "December",
-  ];
   return monthNames[date.getMonth()];
+};
+export const monthIndexToName = (index: number) => {
+  return monthNames[index];
 };

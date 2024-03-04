@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/planned_expenses")
 @CrossOrigin("http://localhost:3000")
 public class PlannedExpenseController {
-    private PlannedExpenseService plannedExpenseService;
+    private final PlannedExpenseService plannedExpenseService;
     @Autowired
     public PlannedExpenseController(PlannedExpenseService expenseService) {
         this.plannedExpenseService = expenseService;

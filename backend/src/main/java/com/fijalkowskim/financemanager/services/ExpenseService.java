@@ -23,7 +23,7 @@ import java.util.*;
 @Service
 @Transactional
 public class ExpenseService {
-    private ExpenseRepository expenseRepository;
+    private final ExpenseRepository expenseRepository;
 
     @Autowired
     public ExpenseService(ExpenseRepository expenseRepository) {

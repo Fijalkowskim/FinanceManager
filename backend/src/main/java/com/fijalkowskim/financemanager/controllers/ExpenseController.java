@@ -19,7 +19,7 @@ import java.util.List;
 @RequestMapping("/api/expenses")
 @CrossOrigin("http://localhost:3000")
 public class ExpenseController {
-    private ExpenseService expenseService;
+    private final ExpenseService expenseService;
     @Autowired
     public ExpenseController(ExpenseService expenseService) {
         this.expenseService = expenseService;

@@ -1,10 +1,10 @@
 import React from "react";
 import AnalyticsComponentContainer from "./AnalyticsComponentContainer";
-import { AnalyticsDashboardData } from "../../models/analytics/AnalyticsDashboardData";
+import { AnalyticsData } from "../../models/analytics/AnalyticsData";
 import { useAnalyticsContext } from "../../context/AnalyticsContext";
 
 type Props = {
-  analyticsDashboard: AnalyticsDashboardData;
+  analyticsDashboard: AnalyticsData;
 };
 
 export default function ComparisonAnalytics({ analyticsDashboard }: Props) {

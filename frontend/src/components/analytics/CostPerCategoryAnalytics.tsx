@@ -1,12 +1,12 @@
 import React from "react";
 import { AnalyticsRangeData } from "../../models/analytics/AnalyticsRangeData";
-import { AnalyticsDashboardData } from "../../models/analytics/AnalyticsDashboardData";
+import { AnalyticsData } from "../../models/analytics/AnalyticsData";
 import AnalyticsComponentContainer from "./AnalyticsComponentContainer";
 import CostPerCategoryChart from "../charts/CostPerCategoryChart";
 import { GetCategoryData } from "../../data/Categories";
 
 type Props = {
-  analyticsDashboard: AnalyticsDashboardData;
+  analyticsDashboard: AnalyticsData;
 };
 
 function CostPerCategoryAnalytics({ analyticsDashboard }: Props) {
@@ -15,9 +15,11 @@ function CostPerCategoryAnalytics({ analyticsDashboard }: Props) {
       <h2 className="text-xl lg:text-2xl text-primary-700">
         Cost per category
       </h2>
-      <CostPerCategoryChart
-        costPerCategory={analyticsDashboard.costsPerCategory}
-      />
+      {analyticsDashboard.costsPerCategory && (
+        <CostPerCategoryChart
+          costPerCategory={analyticsDashboard.costsPerCategory}
+        />
+      )}
       <h3 className="text-3xl text-primary-700">Top category:</h3>
       {analyticsDashboard.topCategory ? (
         <>

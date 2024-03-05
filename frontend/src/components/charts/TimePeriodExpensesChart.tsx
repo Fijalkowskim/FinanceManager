@@ -9,13 +9,16 @@ import {
   ChartData,
 } from "chart.js";
 import { Bar } from "react-chartjs-2";
-import { AnalyticsDashboardData } from "../../models/analytics/AnalyticsDashboardData";
+import { AnalyticsData } from "../../models/analytics/AnalyticsData";
 import {
   compareDates,
   monthIndexToName,
   monthNames,
 } from "../../helpers/helpers";
 import { differenceInDays, format } from "date-fns";
+import { AnalyticsDataType } from "../../models/analytics/AnalyticsDataType";
+import { DailyAnalyticsData } from "../../models/analytics/DailyAnalyticsData";
+import { AnnualAnalyticsData } from "../../models/analytics/AnnualAnalyticsData";
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Tooltip, Legend);
 
@@ -33,7 +36,7 @@ export const options = {
 const chartBarColor = "#1f83e0";
 
 interface Props {
-  analyticsDashboardData: AnalyticsDashboardData;
+  analyticsDashboardData: AnalyticsData;
 }
 
 export default function TimePeriodExpensesChart({
@@ -44,7 +47,7 @@ export default function TimePeriodExpensesChart({
   useEffect(() => {
     let newChartData: ChartData<"bar">;
 
-    if (analyticsDashboardData.dashboardType === "days") {
+    if (analyticsDashboardData.dataType === AnalyticsDataType.daily) {
       const daysArray: Date[] = Array.from(
         {
           length:
@@ -65,16 +68,17 @@ export default function TimePeriodExpensesChart({
           {
             label: "Cost in $",
             data: daysArray.map((date) => {
-              const found = analyticsDashboardData.costsPerDate.find((cost) =>
-                compareDates(date, cost.date)
-              );
+              const found = (
+                analyticsDashboardData as DailyAnalyticsData
+              ).costsPerDate.find((cost) => compareDates(date, cost.date));
               return found ? found.cost : 0;
             }),
             backgroundColor: chartBarColor,
           },
         ],
       };
-    } else {
+      setChartData(newChartData);
+    } else if (analyticsDashboardData.dataType === AnalyticsDataType.annual) {
       const monthsArray: number[] = [...Array(12).keys()];
       newChartData = {
         labels: monthsArray.map((month) => monthIndexToName(month)),
@@ -82,18 +86,17 @@ export default function TimePeriodExpensesChart({
           {
             label: "Cost in $",
             data: monthsArray.map((month) => {
-              const found = analyticsDashboardData.costsPerMonth.find(
-                (cost) => cost.month === month + 1
-              );
+              const found = (
+                analyticsDashboardData as AnnualAnalyticsData
+              ).costsPerMonth.find((cost) => cost.month === month + 1);
               return found ? found.cost : 0;
             }),
             backgroundColor: chartBarColor,
           },
         ],
       };
+      setChartData(newChartData);
     }
-
-    setChartData(newChartData);
   }, [analyticsDashboardData]);
   return (
     <div className="w-full h-full">

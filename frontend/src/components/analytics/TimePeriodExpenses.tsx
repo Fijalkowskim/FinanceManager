@@ -1,12 +1,12 @@
 import React from "react";
 import { AnalyticsRangeData } from "../../models/analytics/AnalyticsRangeData";
 import TimePeriodExpensesChart from "../charts/TimePeriodExpensesChart";
-import { AnalyticsDashboardData } from "../../models/analytics/AnalyticsDashboardData";
+import { AnalyticsData } from "../../models/analytics/AnalyticsData";
 import AnalyticsComponentContainer from "./AnalyticsComponentContainer";
 
 type Props = {
   range: AnalyticsRangeData;
-  analyticsDashboard: AnalyticsDashboardData;
+  analyticsDashboard: AnalyticsData;
 };
 
 export default function TimePeriodExpenses({

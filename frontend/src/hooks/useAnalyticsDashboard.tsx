@@ -1,10 +1,9 @@
 import { useState, useEffect } from "react";
-import { AnalyticsDashboardData } from "../models/analytics/AnalyticsDashboardData";
+import { AnalyticsData } from "../models/analytics/AnalyticsData";
 import { useAnalyticsContext } from "../context/AnalyticsContext";
 
 export const useAnalyticsDashboard = () => {
-  const [analyticsDashboard, setAnalyticsDashboard] =
-    useState<AnalyticsDashboardData>();
+  const [analyticsDashboard, setAnalyticsDashboard] = useState<AnalyticsData>();
   const [isPending, setIsPending] = useState(false);
 
   const { category, range, LoadAnalytics } = useAnalyticsContext();

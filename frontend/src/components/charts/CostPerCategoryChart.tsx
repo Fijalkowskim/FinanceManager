@@ -8,7 +8,7 @@ import {
 } from "chart.js";
 import { Pie } from "react-chartjs-2";
 import { GetCategoryData } from "../../data/Categories";
-import { costPerCategory } from "../../models/analytics/CostPerCategory";
+import { costPerCategory } from "../../models/analytics/costs/CostPerCategory";
 ChartJS.register(ArcElement, Tooltip, Legend);
 
 interface Props {
@@ -34,13 +34,14 @@ const legendOptions = {
 };
 function CostPerCategoryChart({ title, costPerCategory }: Props) {
   const [chartData, setChartData] = useState<ChartDataWithDatasets>();
+
   useEffect(() => {
     const newData: ChartDataWithDatasets = {
       labels: costPerCategory.map((cost) => cost.category),
       datasets: [
         {
           label: "Cost in $",
-          data: costPerCategory.map((cost) => cost.cost),
+          data: costPerCategory?.map((cost) => cost.cost),
           backgroundColor: costPerCategory.map(
             (cost) => GetCategoryData(cost.category).color
           ),

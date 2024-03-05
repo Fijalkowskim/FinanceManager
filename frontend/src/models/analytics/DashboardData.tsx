@@ -1,5 +1,5 @@
 import { ExpenseResponseData } from "../expenses/ExpenseResponseData";
-import { costPerCategory } from "./CostPerCategory";
+import { costPerCategory } from "./costs/CostPerCategory";
 
 export interface DashboardData {
   monthlySpending: number;

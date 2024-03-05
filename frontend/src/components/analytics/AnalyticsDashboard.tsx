@@ -13,17 +13,18 @@ function AnalyticsDashboard() {
   return (
     <div className="flex items-center justify-start flex-col gap-6 lg:max-w-2xl w-full mx-auto overflow-hidden">
       <AnalyticsFilter />
-      {analyticsDashboard !== undefined &&
-      (analyticsDashboard.costsPerDate.length !== 0 ||
-        analyticsDashboard.costsPerMonth.length !== 0) ? (
+      {analyticsDashboard !== undefined ? (
         <>
           <TimePeriodExpenses
             analyticsDashboard={analyticsDashboard}
             range={range}
           />
-          {analyticsDashboard.costsPerCategory.length > 0 && (
-            <CostPerCategoryAnalytics analyticsDashboard={analyticsDashboard} />
-          )}
+          {analyticsDashboard.costsPerCategory &&
+            analyticsDashboard.costsPerCategory.length > 0 && (
+              <CostPerCategoryAnalytics
+                analyticsDashboard={analyticsDashboard}
+              />
+            )}
           <ComparisonAnalytics analyticsDashboard={analyticsDashboard} />
         </>
       ) : (

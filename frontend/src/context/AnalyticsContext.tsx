@@ -2,7 +2,11 @@ import React, { ReactNode, createContext, useContext, useState } from "react";
 import { AnalyticsRangeData } from "../models/analytics/AnalyticsRangeData";
 import { analyticsRanges, last7days } from "../data/AnalyticsRanges";
 import api from "../api/api";
-import { AnalyticsDashboardData } from "../models/analytics/AnalyticsDashboardData";
+import { AnalyticsData } from "../models/analytics/AnalyticsData";
+import { AnalyticsDataType } from "../models/analytics/AnalyticsDataType";
+import { AnnualAnalyticsData } from "../models/analytics/AnnualAnalyticsData";
+import { DashboardData } from "../models/analytics/DashboardData";
+import { DailyAnalyticsData } from "../models/analytics/DailyAnalyticsData";
 const AnalyticsContext = createContext({} as AnalyticsContextProps);
 export function useAnalyticsContext() {
   return useContext(AnalyticsContext);
@@ -15,7 +19,7 @@ interface AnalyticsContextProps {
   setRange: React.Dispatch<React.SetStateAction<AnalyticsRangeData>>;
   setRangeByString: (rangeText: string) => void;
   getYearsWithExpenses: () => Promise<number[]>;
-  LoadAnalytics: () => Promise<AnalyticsDashboardData | undefined>;
+  LoadAnalytics: () => Promise<AnalyticsData | undefined>;
 }
 
 export function AnalyticsContextProvider({
@@ -36,6 +40,7 @@ export function AnalyticsContextProvider({
             filterText: rangeText,
             apiParam: `year/${year}`,
             comparedToPreviousText: `${year - 1}`,
+            dataType: AnalyticsDataType.annual,
           });
       } catch (err) {}
   };
@@ -50,9 +55,7 @@ export function AnalyticsContextProvider({
     }
     return [];
   };
-  const LoadAnalytics = async (): Promise<
-    AnalyticsDashboardData | undefined
-  > => {
+  const LoadAnalytics = async (): Promise<AnalyticsData | undefined> => {
     try {
       const res = await api.get(
         `/analytics/${range.apiParam}?category=${
@@ -61,19 +64,39 @@ export function AnalyticsContextProvider({
       );
       const data = res.data;
       if (data) {
-        const analyticsDashboardData: AnalyticsDashboardData = {
-          dashboardType: data.dashboardType,
+        const baseAnalyticsData: AnalyticsData = {
+          dataType: range.dataType,
           startDate: new Date(data.startDate),
           endDate: new Date(data.endDate),
-          costsPerDate: data.costsPerDate.map((item: any) => ({
-            cost: item.cost,
-            date: new Date(item.date),
-          })),
-          costsPerMonth: data.costsPerMonth,
-          costsPerCategory: data.costsPerCategory,
-          topCategory: data.topCategory,
+          totalCosts: data.totalCosts,
+          totalPreviousCosts: data.totalPreviousCosts,
+          comparedToPreviousCosts: data.comparedToPreviousCosts,
+          costsPerCategory: data.categoriesAnalytics?.costsPerCategory,
+          topCategory: data.categoriesAnalytics?.topCategory,
         };
-        return analyticsDashboardData;
+        if (range.dataType === AnalyticsDataType.annual) {
+          const annualAnalyticsData: AnnualAnalyticsData = {
+            ...baseAnalyticsData,
+            costsPerMonth: data.costsPerMonth,
+            previousCostsPerMonth: data.previousCostsPerMonth,
+          };
+          return annualAnalyticsData;
+        } else if (range.dataType === AnalyticsDataType.daily) {
+          const dailyAnalyticsData: DailyAnalyticsData = {
+            ...baseAnalyticsData,
+            costsPerDate: data.costsPerDate.map((item: any) => ({
+              cost: item.cost,
+              date: new Date(item.date),
+            })),
+            previousCostsPerDate: data.previousCostsPerDate.map(
+              (item: any) => ({
+                cost: item.cost,
+                date: new Date(item.date),
+              })
+            ),
+          };
+          return dailyAnalyticsData;
+        }
       }
     } catch (err) {
       console.log(err);

@@ -10,4 +10,15 @@ import java.util.List;
 public class AnnualAnalyticsData extends AnalyticsData{
     List<CostPerMonth> costsPerMonth;
     List<CostPerMonth> previousCostsPerMonth;
+    public AnnualAnalyticsData(){
+
+    }
+    public AnnualAnalyticsData(AnalyticsData analyticsData) {
+        this.setStartDate(analyticsData.getStartDate());
+        this.setEndDate(analyticsData.getEndDate());
+        this.setTotalCosts(analyticsData.getTotalCosts());
+        this.setTotalPreviousCosts(analyticsData.getTotalPreviousCosts());
+        this.setComparedToPreviousCosts(analyticsData.getComparedToPreviousCosts());
+        this.setCategoriesAnalytics(analyticsData.getCategoriesAnalytics());
+    }
 }

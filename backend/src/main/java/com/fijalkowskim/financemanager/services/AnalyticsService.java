@@ -27,69 +27,99 @@ public class AnalyticsService {
         return expenseRepository.findDistinctYearsWithExpenses();
     }
     public DailyAnalyticsData getDailyAnalytics(int days, String category) {
-        DailyAnalyticsData dailyAnalyticsData = new DailyAnalyticsData();
-
-        //Calculate dates
         LocalDateTime endDate = LocalDateTime.now();
         LocalDateTime startDate = endDate.minusDays(days).withHour(0).withMinute(0).withSecond(0);
-        dailyAnalyticsData.setStartDate(startDate);
-        dailyAnalyticsData.setEndDate(endDate);
+        LocalDateTime previousStartDate = startDate.minusDays(days).withHour(0).withMinute(0).withSecond(0);
+        LocalDateTime previousEndDate = startDate.minusSeconds(1);
 
-        //Calculate daily expenses
-        List<Expense> expenses = getExpensesFromTimeRange(startDate,endDate,category);
-        Map<LocalDate, Double> dailyExpensesMap = expenses.stream()
-                .collect(Collectors.groupingBy(expense -> expense.getDate().toLocalDate(),
-                        Collectors.summingDouble(Expense::getCost)));
+        DailyAnalyticsData dailyAnalyticsData = new DailyAnalyticsData(getBaseAnalyticsData(startDate,endDate,previousStartDate,previousEndDate,category));
 
-        //Set cost per date
-        List<CostPerDate> costsPerDateList = dailyExpensesMap.entrySet().stream()
-                .map(entry -> new CostPerDate(entry.getValue(),Date.from(entry.getKey().atStartOfDay().atZone(ZoneId.systemDefault()).toInstant())))
-                .sorted(Comparator.comparing(CostPerDate::getDate))
-                .collect(Collectors.toList());
-        dailyAnalyticsData.setCostsPerDate(costsPerDateList);
-
-        //Calculate cost per category
-        if(category.isEmpty()) {
-            dailyAnalyticsData.setCategoriesAnalytics(
-                    expenseService.calculateCostsPerCategory(expenseRepository.calculateCostsPerCategoryBetweenDates(startDate, endDate)));
-        }
+        dailyAnalyticsData.setCostsPerDate(calculateCostsPerDate(startDate,endDate,category));
+        dailyAnalyticsData.setPreviousCostsPerDate(calculateCostsPerDate(previousStartDate, previousEndDate,category));
 
         return dailyAnalyticsData;
     }
     public AnnualAnalyticsData getAnnualAnalytics(int year, String category) {
-        AnnualAnalyticsData annualAnalyticsData = new AnnualAnalyticsData();
-
-        //Calculate dates
-        LocalDateTime endDate = LocalDateTime.of(year, Month.DECEMBER, 31, 23, 59, 59);
         LocalDateTime startDate = LocalDateTime.of(year, Month.JANUARY, 1, 0, 0, 0);
-        annualAnalyticsData.setStartDate(startDate);
-        annualAnalyticsData.setEndDate(endDate);
+        LocalDateTime endDate = LocalDateTime.of(year, Month.DECEMBER, 31, 23, 59, 59);
+        LocalDateTime previousStartDate = startDate.minusYears(1);
+        LocalDateTime previousEndDate =  endDate.minusYears(1);
 
-        //Calculate monthly expenses
-        List<Expense> expenses = getExpensesFromTimeRange(startDate, endDate, category);
-        Map<YearMonth, Double> monthlyExpensesMap = expenses.stream()
-                .collect(Collectors.groupingBy(expense -> YearMonth.from(expense.getDate()),
-                        Collectors.summingDouble(Expense::getCost)));
+        AnnualAnalyticsData annualAnalyticsData = new AnnualAnalyticsData(getBaseAnalyticsData(startDate,endDate,previousStartDate,previousEndDate,category));
 
-        //Set cost per month
-        List<CostPerMonth> costsPerMonthList = monthlyExpensesMap.entrySet().stream()
-                .map(entry -> new CostPerMonth(entry.getValue(),entry.getKey().getMonthValue()))
-                .sorted(Comparator.comparing(CostPerMonth::getMonth))
-                .collect(Collectors.toList());
+        annualAnalyticsData.setCostsPerMonth(calculateCostsPerMonth(startDate,endDate,category));
+        annualAnalyticsData.setPreviousCostsPerMonth(calculateCostsPerMonth(previousStartDate, previousEndDate,category));
 
-        annualAnalyticsData.setCostsPerMonth(costsPerMonthList);
-
-        //Calculate cost per category
-        if(category.isEmpty()) {
-            annualAnalyticsData.setCategoriesAnalytics(
-                    expenseService.calculateCostsPerCategory(expenseRepository.calculateCostsPerCategoryBetweenDates(startDate, endDate)));
-        }
         return annualAnalyticsData;
     }
     private List<Expense> getExpensesFromTimeRange(LocalDateTime startDate, LocalDateTime endDate, String category){
         return category.isEmpty() ?
                 expenseRepository.findAllByDateBetweenOrderByDateAsc(startDate, endDate):
                 expenseRepository.findAllByCategoryAndDateBetweenOrderByDateAsc(category,startDate,endDate);
+    }
+    private AnalyticsData getBaseAnalyticsData(LocalDateTime startDate, LocalDateTime endDate,LocalDateTime previousStartDate, LocalDateTime previousEndDate, String category){
+        AnalyticsData analyticsData = new AnalyticsData();
+        analyticsData.setStartDate(startDate);
+        analyticsData.setEndDate(endDate);
+
+        double totalCosts, totalPreviousCosts;
+        if(category.isEmpty()) {
+            analyticsData.setCategoriesAnalytics(expenseService.calculateCostsPerCategory(expenseRepository.calculateCostsPerCategoryBetweenDates(startDate, endDate)));
+            totalCosts = Optional.ofNullable(expenseRepository.calculateTotalSpendingBetweenDates(startDate,endDate)).orElse(0.0);
+            totalPreviousCosts = Optional.ofNullable(expenseRepository.calculateTotalSpendingBetweenDates(previousStartDate,previousEndDate)).orElse(0.0);
+        }
+        else{
+            totalCosts = Optional.ofNullable(expenseRepository.calculateTotalSpendingBetweenDatesForCategory(startDate,endDate,category)).orElse(0.0);
+            totalPreviousCosts = Optional.ofNullable(expenseRepository.calculateTotalSpendingBetweenDatesForCategory(previousStartDate,previousEndDate,category)).orElse(0.0);
+        }
+        double costDifference = calculatePercentageDifference(totalPreviousCosts, totalCosts);
+        String comparedToPreviousCosts = formatPercentageDifference(costDifference);
+        analyticsData.setTotalCosts(totalCosts);
+        analyticsData.setTotalPreviousCosts(totalPreviousCosts);
+        analyticsData.setComparedToPreviousCosts(comparedToPreviousCosts);
+
+        return analyticsData;
+    }
+    private List<CostPerMonth> calculateCostsPerMonth(LocalDateTime startDate, LocalDateTime endDate, String category){
+        //Calculate monthly expenses
+        Map<YearMonth, Double> monthlyExpensesMap = getExpensesFromTimeRange(startDate, endDate, category).stream()
+                .collect(Collectors.groupingBy(expense -> YearMonth.from(expense.getDate()),
+                        Collectors.summingDouble(Expense::getCost)));
+
+        return monthlyExpensesMap.entrySet().stream()
+                .map(entry -> new CostPerMonth(entry.getValue(),entry.getKey().getMonthValue()))
+                .sorted(Comparator.comparing(CostPerMonth::getMonth))
+                .collect(Collectors.toList());
+    }
+    private List<CostPerDate> calculateCostsPerDate(LocalDateTime startDate, LocalDateTime endDate, String category){
+        //Calculate daily expenses
+        Map<LocalDate, Double> dailyExpensesMap = getExpensesFromTimeRange(startDate,endDate,category).stream()
+                .collect(Collectors.groupingBy(expense -> expense.getDate().toLocalDate(),
+                        Collectors.summingDouble(Expense::getCost)));
+
+        //Set cost per date
+        return dailyExpensesMap.entrySet().stream()
+                .map(entry -> new CostPerDate(entry.getValue(),Date.from(entry.getKey().atStartOfDay().atZone(ZoneId.systemDefault()).toInstant())))
+                .sorted(Comparator.comparing(CostPerDate::getDate))
+                .collect(Collectors.toList());
+    }
+
+    private double calculatePercentageDifference(double previousValue, double currentValue) {
+        if (previousValue == 0.0) {
+            return currentValue > 0.0 ? 100.0 : 0.0;
+        }
+
+        return ((currentValue - previousValue) / Math.abs(previousValue)) * 100.0;
+    }
+
+    private String formatPercentageDifference(double percentageDifference) {
+        if (percentageDifference > 0.0) {
+            return String.format("+%.2f%%", percentageDifference);
+        } else if (percentageDifference < 0.0) {
+            return String.format("%.2f%%", percentageDifference);
+        } else {
+            return "0.00%";
+        }
     }
 
 }

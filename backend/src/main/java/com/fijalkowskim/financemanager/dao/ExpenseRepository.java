@@ -30,6 +30,10 @@ public interface ExpenseRepository extends JpaRepository<Expense, Long> {
     @Query("SELECT SUM(e.cost) FROM Expense e WHERE YEAR(e.date) = :year AND MONTH(e.date) = :month")
     Double calculateTotalSpendingForMonth(@Param("year") int year, @Param("month") int month);
 
+    @Query("SELECT SUM(e.cost) FROM Expense e WHERE e.date >= :startDate AND e.date <= :endDate")
+    Double calculateTotalSpendingBetweenDates(@Param("startDate") LocalDateTime startDate, @Param("endDate") LocalDateTime endDate);
+    @Query("SELECT SUM(e.cost) FROM Expense e WHERE e.date >= :startDate AND e.date <= :endDate AND e.category = :category")
+    Double calculateTotalSpendingBetweenDatesForCategory(@Param("startDate") LocalDateTime startDate, @Param("endDate") LocalDateTime endDate, @Param("category") String category);
     @Query("SELECT e.category FROM Expense e WHERE YEAR(e.date) = :year AND MONTH(e.date) = :month GROUP BY e.category ORDER BY SUM(e.cost) DESC LIMIT 1")
     String findTopCategoryForMonth(@Param("year") int year, @Param("month") int month);
 

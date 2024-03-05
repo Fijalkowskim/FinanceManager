@@ -1,11 +1,11 @@
 package com.fijalkowskim.financemanager.services;
 
-import com.fijalkowskim.financemanager.models.CostPerCategory;
-import org.springframework.cglib.core.Local;
+import com.fijalkowskim.financemanager.models.analytics.CategoriesAnalytics;
+import com.fijalkowskim.financemanager.models.analytics.CostPerCategory;
 import org.springframework.data.util.Pair;
 import com.fijalkowskim.financemanager.dao.ExpenseRepository;
-import com.fijalkowskim.financemanager.models.DashboardData;
-import com.fijalkowskim.financemanager.models.Expense;
+import com.fijalkowskim.financemanager.models.dashboards.DashboardData;
+import com.fijalkowskim.financemanager.models.expences.Expense;
 import com.fijalkowskim.financemanager.requestmodels.ExpenseRequest;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,9 +14,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.sql.Array;
-import java.sql.Date;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
 
@@ -102,18 +99,14 @@ public class ExpenseService {
         double monthlySpending = expenseRepository.calculateTotalSpendingForMonth(year, month);
         Expense topExpense = expenseRepository.findTopExpenseForMonth(year, month);
 
-        Pair<List<CostPerCategory>,CostPerCategory> calculatedCategoriesData =
-                calculateCostsPerCategoryForMonth(expenseRepository.calculateCostsPerCategoryForMonth(year, month));
         DashboardData dashboardData = new DashboardData();
         dashboardData.setMonthlySpending(monthlySpending);
-        dashboardData.setCostsPerCategory(calculatedCategoriesData.getFirst());
-        dashboardData.setTopCategory(calculatedCategoriesData.getSecond());
+        dashboardData.setCategoriesAnalytics(calculateCostsPerCategory(expenseRepository.calculateCostsPerCategoryForMonth(year, month)));
         dashboardData.setTopExpense(topExpense);
-
 
         return dashboardData;
     }
-    public Pair<List<CostPerCategory>,CostPerCategory> calculateCostsPerCategoryForMonth(List<Object[]> costPerCategoryQuery) {
+    public CategoriesAnalytics calculateCostsPerCategory(List<Object[]> costPerCategoryQuery) {
         List <CostPerCategory> costsPerCategory = new ArrayList<>();
         CostPerCategory topCategory = null;
 
@@ -131,6 +124,6 @@ public class ExpenseService {
 
             costsPerCategory.add(costPerCategory);
         }
-        return Pair.of(costsPerCategory,topCategory);
+        return new CategoriesAnalytics(costsPerCategory,topCategory);
     }
 }

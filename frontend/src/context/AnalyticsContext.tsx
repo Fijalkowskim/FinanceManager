@@ -32,7 +32,11 @@ export function AnalyticsContextProvider({
       try {
         const year = parseInt(rangeText);
         if (year > 0)
-          setRange({ filterText: rangeText, apiParam: `year/${year}` });
+          setRange({
+            filterText: rangeText,
+            apiParam: `year/${year}`,
+            comparedToPreviousText: `${year - 1}`,
+          });
       } catch (err) {}
   };
   const getYearsWithExpenses = async (): Promise<number[]> => {
@@ -67,7 +71,7 @@ export function AnalyticsContextProvider({
           })),
           costsPerMonth: data.costsPerMonth,
           costsPerCategory: data.costsPerCategory,
-          topCategory: data.topCateogry,
+          topCategory: data.topCategory,
         };
         return analyticsDashboardData;
       }

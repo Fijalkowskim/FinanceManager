@@ -1,6 +1,6 @@
 package com.fijalkowskim.financemanager.controllers;
 
-import com.fijalkowskim.financemanager.models.Expense;
+import com.fijalkowskim.financemanager.models.expences.Expense;
 import com.fijalkowskim.financemanager.services.ExpenseService;
 import org.junit.Test;
 import org.junit.runner.RunWith;

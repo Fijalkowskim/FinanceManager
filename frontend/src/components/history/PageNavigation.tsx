@@ -2,9 +2,11 @@ import React from "react";
 import { FaAngleLeft, FaAngleRight } from "react-icons/fa";
 import { motion } from "framer-motion";
 import { useExpenseHistoryContext } from "../../context/ExpenseHistoryContext";
-
-function PageNavigation() {
-  const { page, totalPages, setPage } = useExpenseHistoryContext();
+interface Props {
+  totalPages: number;
+}
+function PageNavigation({ totalPages }: Props) {
+  const { page, setPage } = useExpenseHistoryContext();
   return (
     <div className="mt-4 flex items-center justify-center gap-1">
       <motion.button

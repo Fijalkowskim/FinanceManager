@@ -1,6 +1,8 @@
 package com.fijalkowskim.financemanager.controllers;
 
-import com.fijalkowskim.financemanager.models.AnalyticsDashboardData;
+import com.fijalkowskim.financemanager.models.analytics.AnalyticsData;
+import com.fijalkowskim.financemanager.models.analytics.AnnualAnalyticsData;
+import com.fijalkowskim.financemanager.models.analytics.DailyAnalyticsData;
 import com.fijalkowskim.financemanager.services.AnalyticsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -19,7 +21,7 @@ public class AnalyticsController {
         this.analyticsService = analyticsService;
     }
     @GetMapping("/days/{days}")
-    public ResponseEntity<AnalyticsDashboardData>getDailyAnalytics (
+    public ResponseEntity<DailyAnalyticsData>getDailyAnalytics (
             @PathVariable int days,
             @RequestParam(name = "category", defaultValue = "",required = false ) String category) {
         if(days <= 0){
@@ -28,7 +30,7 @@ public class AnalyticsController {
         return ResponseEntity.ok().body(analyticsService.getDailyAnalytics(days, category));
     }
     @GetMapping("/year/{year}")
-    public ResponseEntity<AnalyticsDashboardData>getAnnualAnalytics (
+    public ResponseEntity<AnnualAnalyticsData>getAnnualAnalytics (
             @PathVariable int year,
             @RequestParam(name = "category", defaultValue = "",required = false ) String category) {
         if(year < 0){

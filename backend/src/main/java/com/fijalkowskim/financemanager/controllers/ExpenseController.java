@@ -1,7 +1,7 @@
 package com.fijalkowskim.financemanager.controllers;
 
-import com.fijalkowskim.financemanager.models.DashboardData;
-import com.fijalkowskim.financemanager.models.Expense;
+import com.fijalkowskim.financemanager.models.dashboards.DashboardData;
+import com.fijalkowskim.financemanager.models.expences.Expense;
 import com.fijalkowskim.financemanager.requestmodels.ExpenseRequest;
 import com.fijalkowskim.financemanager.services.ExpenseService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,11 +9,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.ErrorResponse;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.ArrayList;
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/expenses")

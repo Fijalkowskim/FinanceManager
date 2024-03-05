@@ -1,5 +1,6 @@
-package com.fijalkowskim.financemanager.models;
+package com.fijalkowskim.financemanager.models.dashboards;
 
+import com.fijalkowskim.financemanager.models.expences.PlannedExpense;
 import lombok.Data;
 
 import java.util.List;

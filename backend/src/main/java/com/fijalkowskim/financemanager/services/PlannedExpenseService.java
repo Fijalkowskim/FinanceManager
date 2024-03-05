@@ -1,10 +1,10 @@
 package com.fijalkowskim.financemanager.services;
 
+import com.fijalkowskim.financemanager.dao.ExpenseRepository;
 import com.fijalkowskim.financemanager.dao.PlannedExpenseRepository;
-import com.fijalkowskim.financemanager.models.Expense;
-import com.fijalkowskim.financemanager.models.PlannedExpense;
-import com.fijalkowskim.financemanager.models.PlannedExpensesDashboard;
-import com.fijalkowskim.financemanager.requestmodels.ExpenseRequest;
+import com.fijalkowskim.financemanager.models.expences.Expense;
+import com.fijalkowskim.financemanager.models.expences.PlannedExpense;
+import com.fijalkowskim.financemanager.models.dashboards.PlannedExpensesDashboard;
 import com.fijalkowskim.financemanager.requestmodels.PlannedExpenseRequest;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,10 +20,12 @@ import java.util.*;
 @Transactional
 public class PlannedExpenseService {
     private final PlannedExpenseRepository plannedExpenseRepository;
+    private final ExpenseRepository expenseRepository;
 
     @Autowired
-    public PlannedExpenseService(PlannedExpenseRepository plannedExpenseRepository) {
+    public PlannedExpenseService(PlannedExpenseRepository plannedExpenseRepository, ExpenseRepository expenseRepository) {
         this.plannedExpenseRepository = plannedExpenseRepository;
+        this.expenseRepository = expenseRepository;
     }
     public Page<PlannedExpense> getExpenses(PageRequest pageRequest, String sortCost, String sortDate) throws RuntimeException{
         if(sortCost != null){
@@ -66,6 +68,19 @@ public class PlannedExpenseService {
             throw new Exception("Expense not found");
         }
         plannedExpenseRepository.delete(expense.get());
+    }
+    public Expense payExpense(Long id)throws Exception{
+        Optional<PlannedExpense> expense = plannedExpenseRepository.findById(id);
+        if(expense.isEmpty()){
+            throw new Exception("Expense not found");
+        }
+        Expense newExpense = new Expense();
+        newExpense.setDate(expense.get().getDate());
+        newExpense.setDescription(expense.get().getDescription());
+        newExpense.setCost(expense.get().getCost());
+        newExpense.setCategory(expense.get().getCategory());
+        plannedExpenseRepository.delete(expense.get());
+        return expenseRepository.save(newExpense);
     }
     public PlannedExpense updateExpense(Long id, PlannedExpenseRequest expenseRequest)throws Exception{
         Optional<PlannedExpense> oldExpense = plannedExpenseRepository.findById(id);

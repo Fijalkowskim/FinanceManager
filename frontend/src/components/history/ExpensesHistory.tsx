@@ -17,8 +17,7 @@ interface Props {
 }
 
 function ExpensesHistory({ type }: Props) {
-  const { expenses } = useExpenses(type);
-
+  const { expenses, totalPages } = useExpenses(type);
   return (
     <div className="flex items-center justify-start flex-col gap-1 w-full overflow-hidden">
       {type === ExpenseHistoryType.PlannedExpenses && (
@@ -30,7 +29,7 @@ function ExpensesHistory({ type }: Props) {
       <div className="mt-1" />
       <PopupController />
       <div className="-mb-3" />
-      {expenses.length > 0 && <PageNavigation />}
+      {expenses.length > 0 && <PageNavigation totalPages={totalPages} />}
       <div className="-mb-3" />
       <motion.div
         layout
@@ -47,7 +46,7 @@ function ExpensesHistory({ type }: Props) {
         </AnimatePresence>
       </motion.div>
       {expenses.length === 0 && <p>No expesnses yet</p>}
-      {expenses.length > 0 && <PageNavigation />}
+      {expenses.length > 0 && <PageNavigation totalPages={totalPages} />}
     </div>
   );
 }

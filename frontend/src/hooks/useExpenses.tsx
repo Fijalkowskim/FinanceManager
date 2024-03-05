@@ -26,9 +26,9 @@ export const useExpenses = (historyType: ExpenseHistoryType) => {
           : ExpenseType.normal,
         category
       );
-      setIsPending(false);
       setExpenses(data.expenses);
       setTotalPages(data.totalPages);
+      setIsPending(false);
     };
     LoadExpenses();
   }, [

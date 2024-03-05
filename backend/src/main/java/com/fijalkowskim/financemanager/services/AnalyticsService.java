@@ -1,7 +1,8 @@
 package com.fijalkowskim.financemanager.services;
 
 import com.fijalkowskim.financemanager.dao.ExpenseRepository;
-import com.fijalkowskim.financemanager.models.*;
+import com.fijalkowskim.financemanager.models.analytics.*;
+import com.fijalkowskim.financemanager.models.expences.Expense;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.util.Pair;
@@ -9,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.*;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -24,92 +26,65 @@ public class AnalyticsService {
     public List<Integer> getYearsWithExpenses(){
         return expenseRepository.findDistinctYearsWithExpenses();
     }
-    public AnalyticsDashboardData getDailyAnalytics(int days, String category) {
-        AnalyticsDashboardData analyticsDashboardData = new AnalyticsDashboardData();
-        analyticsDashboardData.setDashboardType("days");
-        analyticsDashboardData.setCostsPerMonth(new ArrayList<>());
+    public DailyAnalyticsData getDailyAnalytics(int days, String category) {
+        DailyAnalyticsData dailyAnalyticsData = new DailyAnalyticsData();
 
         //Calculate dates
         LocalDateTime endDate = LocalDateTime.now();
         LocalDateTime startDate = endDate.minusDays(days).withHour(0).withMinute(0).withSecond(0);
-        analyticsDashboardData.setStartDate(startDate);
-        analyticsDashboardData.setEndDate(endDate);
+        dailyAnalyticsData.setStartDate(startDate);
+        dailyAnalyticsData.setEndDate(endDate);
 
         //Calculate daily expenses
         List<Expense> expenses = getExpensesFromTimeRange(startDate,endDate,category);
-        Map<LocalDate, Float> dailyExpensesMap = new HashMap<>();
-        for (Expense expense : expenses) {
-            LocalDate expenseDate = expense.getDate().toLocalDate();
-            Float currentAmount = dailyExpensesMap.getOrDefault(expenseDate, 0.0f);
-            dailyExpensesMap.put(expenseDate, currentAmount + expense.getCost());
-        }
+        Map<LocalDate, Double> dailyExpensesMap = expenses.stream()
+                .collect(Collectors.groupingBy(expense -> expense.getDate().toLocalDate(),
+                        Collectors.summingDouble(Expense::getCost)));
 
         //Set cost per date
-        List<CostPerDate> costsPerDateList = new ArrayList<>();
-        for (Map.Entry<LocalDate, Float> entry : dailyExpensesMap.entrySet()) {
-            CostPerDate costPerDate = new CostPerDate();
-            costPerDate.setDate(Date.from(entry.getKey().atStartOfDay().atZone(ZoneId.systemDefault()).toInstant()));
-            costPerDate.setCost(entry.getValue());
-            costsPerDateList.add(costPerDate);
-        }
-        costsPerDateList.sort(Comparator.comparing(CostPerDate::getDate));
-        analyticsDashboardData.setCostsPerDate(costsPerDateList);
+        List<CostPerDate> costsPerDateList = dailyExpensesMap.entrySet().stream()
+                .map(entry -> new CostPerDate(entry.getValue(),Date.from(entry.getKey().atStartOfDay().atZone(ZoneId.systemDefault()).toInstant())))
+                .sorted(Comparator.comparing(CostPerDate::getDate))
+                .collect(Collectors.toList());
+        dailyAnalyticsData.setCostsPerDate(costsPerDateList);
 
         //Calculate cost per category
         if(category.isEmpty()) {
-            Pair<List<CostPerCategory>, CostPerCategory> calculatedCategoriesData =
-                    expenseService.calculateCostsPerCategoryForMonth(expenseRepository.calculateCostsPerCategoryBetweenDates(startDate, endDate));
-            analyticsDashboardData.setCostsPerCategory(calculatedCategoriesData.getFirst());
-            analyticsDashboardData.setTopCategory(calculatedCategoriesData.getSecond());
+            dailyAnalyticsData.setCategoriesAnalytics(
+                    expenseService.calculateCostsPerCategory(expenseRepository.calculateCostsPerCategoryBetweenDates(startDate, endDate)));
         }
-        else{
-            analyticsDashboardData.setCostsPerCategory(new ArrayList<>());
-            analyticsDashboardData.setTopCategory(null);
-        }
-        return analyticsDashboardData;
+
+        return dailyAnalyticsData;
     }
-    public AnalyticsDashboardData getAnnualAnalytics(int year, String category) {
-        AnalyticsDashboardData analyticsDashboardData = new AnalyticsDashboardData();
-        analyticsDashboardData.setDashboardType("year");
-        analyticsDashboardData.setCostsPerDate(new ArrayList<>());
+    public AnnualAnalyticsData getAnnualAnalytics(int year, String category) {
+        AnnualAnalyticsData annualAnalyticsData = new AnnualAnalyticsData();
 
         //Calculate dates
         LocalDateTime endDate = LocalDateTime.of(year, Month.DECEMBER, 31, 23, 59, 59);
         LocalDateTime startDate = LocalDateTime.of(year, Month.JANUARY, 1, 0, 0, 0);
-        analyticsDashboardData.setStartDate(startDate);
-        analyticsDashboardData.setEndDate(endDate);
+        annualAnalyticsData.setStartDate(startDate);
+        annualAnalyticsData.setEndDate(endDate);
 
         //Calculate monthly expenses
         List<Expense> expenses = getExpensesFromTimeRange(startDate, endDate, category);
-        Map<YearMonth, Float> monthlyExpensesMap = new HashMap<>();
-        for (Expense expense : expenses) {
-            YearMonth expenseMonth = YearMonth.from(expense.getDate());
-            Float currentAmount = monthlyExpensesMap.getOrDefault(expenseMonth, 0.0f);
-            monthlyExpensesMap.put(expenseMonth, currentAmount + expense.getCost());
-        }
+        Map<YearMonth, Double> monthlyExpensesMap = expenses.stream()
+                .collect(Collectors.groupingBy(expense -> YearMonth.from(expense.getDate()),
+                        Collectors.summingDouble(Expense::getCost)));
 
         //Set cost per month
-        List<CostPerMonth> costsPerMonthList = new ArrayList<>();
-        for (Map.Entry<YearMonth, Float> entry : monthlyExpensesMap.entrySet()) {
-            CostPerMonth costPerMonth = new CostPerMonth();
-            costPerMonth.setMonth(entry.getKey().getMonthValue());
-            costPerMonth.setCost(entry.getValue());
-            costsPerMonthList.add(costPerMonth);
-        }
-        costsPerMonthList.sort(Comparator.comparing(CostPerMonth::getMonth));
-        analyticsDashboardData.setCostsPerMonth(costsPerMonthList);
+        List<CostPerMonth> costsPerMonthList = monthlyExpensesMap.entrySet().stream()
+                .map(entry -> new CostPerMonth(entry.getValue(),entry.getKey().getMonthValue()))
+                .sorted(Comparator.comparing(CostPerMonth::getMonth))
+                .collect(Collectors.toList());
+
+        annualAnalyticsData.setCostsPerMonth(costsPerMonthList);
 
         //Calculate cost per category
         if(category.isEmpty()) {
-            Pair<List<CostPerCategory>, CostPerCategory> calculatedCategoriesData =
-                    expenseService.calculateCostsPerCategoryForMonth(expenseRepository.calculateCostsPerCategoryBetweenDates(startDate, endDate));
-            analyticsDashboardData.setCostsPerCategory(calculatedCategoriesData.getFirst());
-            analyticsDashboardData.setTopCategory(calculatedCategoriesData.getSecond());
-        } else{
-            analyticsDashboardData.setCostsPerCategory(new ArrayList<>());
-            analyticsDashboardData.setTopCategory(null);
+            annualAnalyticsData.setCategoriesAnalytics(
+                    expenseService.calculateCostsPerCategory(expenseRepository.calculateCostsPerCategoryBetweenDates(startDate, endDate)));
         }
-        return analyticsDashboardData;
+        return annualAnalyticsData;
     }
     private List<Expense> getExpensesFromTimeRange(LocalDateTime startDate, LocalDateTime endDate, String category){
         return category.isEmpty() ?

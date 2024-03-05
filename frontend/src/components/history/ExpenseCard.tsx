@@ -16,7 +16,8 @@ interface Props {
 }
 const ExpenseCard = forwardRef<HTMLButtonElement, Props>(
   ({ expense, planned }: Props, ref) => {
-    const { DeleteExpense, AddExpense } = useExpensesContext();
+    const { DeleteExpense, AddExpense, PayPlannedExpense } =
+      useExpensesContext();
     const { setTimeoutMessage } = usePopupContext();
     const { selectedExpense, setSelectedExpense, setDeletedExpense } =
       useExpenseHistoryContext();
@@ -29,16 +30,12 @@ const ExpenseCard = forwardRef<HTMLButtonElement, Props>(
       e: React.MouseEvent<HTMLButtonElement, MouseEvent>
     ) => {
       e.stopPropagation();
-      const response: ResponseStatusData = await AddExpense(
-        expense,
-        ExpenseType.normal
-      );
+      const response: ResponseStatusData = await PayPlannedExpense(expense.id);
       if (response.status < 300) {
         setDeletedExpense(expense);
         setSelectedExpense(undefined);
-        setTimeoutMessage("info", "Expense added to history", 3000);
+        setTimeoutMessage("error", `Expense paid (moved to history)`, 3000);
       }
-      onDelete(e);
     };
     const onDelete = async (
       e: React.MouseEvent<HTMLButtonElement, MouseEvent>

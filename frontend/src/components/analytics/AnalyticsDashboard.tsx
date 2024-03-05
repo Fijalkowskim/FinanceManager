@@ -5,6 +5,7 @@ import TimePeriodExpensesChart from "../charts/TimePeriodExpensesChart";
 import { useAnalyticsContext } from "../../context/AnalyticsContext";
 import TimePeriodExpenses from "./TimePeriodExpenses";
 import CostPerCategoryAnalytics from "./CostPerCategoryAnalytics";
+import ComparisonAnalytics from "./ComparisonAnalytics";
 
 function AnalyticsDashboard() {
   const { analyticsDashboard } = useAnalyticsDashboard();
@@ -23,6 +24,7 @@ function AnalyticsDashboard() {
           {analyticsDashboard.costsPerCategory.length > 0 && (
             <CostPerCategoryAnalytics analyticsDashboard={analyticsDashboard} />
           )}
+          <ComparisonAnalytics analyticsDashboard={analyticsDashboard} />
         </>
       ) : (
         <div className="h-[60vh] flex items-center justify-center">

@@ -1,12 +1,9 @@
 package com.fijalkowskim.financemanager.controllers;
 
-import com.fijalkowskim.financemanager.models.DashboardData;
-import com.fijalkowskim.financemanager.models.Expense;
-import com.fijalkowskim.financemanager.models.PlannedExpense;
-import com.fijalkowskim.financemanager.models.PlannedExpensesDashboard;
-import com.fijalkowskim.financemanager.requestmodels.ExpenseRequest;
+import com.fijalkowskim.financemanager.models.expences.Expense;
+import com.fijalkowskim.financemanager.models.expences.PlannedExpense;
+import com.fijalkowskim.financemanager.models.dashboards.PlannedExpensesDashboard;
 import com.fijalkowskim.financemanager.requestmodels.PlannedExpenseRequest;
-import com.fijalkowskim.financemanager.services.ExpenseService;
 import com.fijalkowskim.financemanager.services.PlannedExpenseService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -57,6 +54,14 @@ public class PlannedExpenseController {
         try{
             plannedExpenseService.deleteExpense(id);
             return ResponseEntity.status(HttpStatus.OK).build();
+        }catch(Exception e){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+    }
+    @DeleteMapping("/pay/{id}")
+    public ResponseEntity<Expense> payPlannedExpense(@PathVariable long id){
+        try{
+            return ResponseEntity.status(HttpStatus.OK).body(plannedExpenseService.payExpense(id));
         }catch(Exception e){
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }

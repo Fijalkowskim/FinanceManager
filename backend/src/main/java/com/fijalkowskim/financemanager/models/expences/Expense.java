@@ -1,14 +1,15 @@
-package com.fijalkowskim.financemanager.models;
+package com.fijalkowskim.financemanager.models.expences;
 
 import jakarta.persistence.*;
 import lombok.Data;
 
 import java.time.LocalDateTime;
+import java.util.Date;
 
 @Entity
-@Table(name="planned_expenses")
+@Table(name="expenses")
 @Data
-public class PlannedExpense {
+public class Expense {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name="id")

@@ -68,6 +68,8 @@ export function AnalyticsContextProvider({
           dataType: range.dataType,
           startDate: new Date(data.startDate),
           endDate: new Date(data.endDate),
+          previousStartDate: new Date(data.previousStartDate),
+          previousEndDate: new Date(data.previousEndDate),
           totalCosts: data.totalCosts,
           totalPreviousCosts: data.totalPreviousCosts,
           comparedToPreviousCosts: data.comparedToPreviousCosts,

@@ -8,6 +8,8 @@ import java.util.List;
 public class AnalyticsData {
     LocalDateTime startDate;
     LocalDateTime endDate;
+    LocalDateTime previousStartDate;
+    LocalDateTime previousEndDate;
     Double totalCosts;
     Double totalPreviousCosts;
     String comparedToPreviousCosts;

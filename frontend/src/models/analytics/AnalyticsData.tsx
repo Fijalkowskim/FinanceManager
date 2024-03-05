@@ -7,6 +7,8 @@ export interface AnalyticsData {
   dataType: AnalyticsDataType;
   startDate: Date;
   endDate: Date;
+  previousStartDate: Date;
+  previousEndDate: Date;
   totalCosts: number;
   totalPreviousCosts: number;
   comparedToPreviousCosts: string;

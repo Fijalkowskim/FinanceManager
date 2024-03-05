@@ -16,6 +16,8 @@ public class AnnualAnalyticsData extends AnalyticsData{
     public AnnualAnalyticsData(AnalyticsData analyticsData) {
         this.setStartDate(analyticsData.getStartDate());
         this.setEndDate(analyticsData.getEndDate());
+        this.setPreviousStartDate(analyticsData.getPreviousStartDate());
+        this.setPreviousEndDate(analyticsData.getPreviousEndDate());
         this.setTotalCosts(analyticsData.getTotalCosts());
         this.setTotalPreviousCosts(analyticsData.getTotalPreviousCosts());
         this.setComparedToPreviousCosts(analyticsData.getComparedToPreviousCosts());

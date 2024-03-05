@@ -14,10 +14,11 @@ export default function TimePeriodExpenses({
   analyticsDashboard,
 }: Props) {
   return (
-    <AnalyticsComponentContainer className="h-screen max-h-[30rem] ">
+    <AnalyticsComponentContainer className="h-screen max-h-[30rem] pt-2">
       <h2 className="text-xl lg:text-2xl text-primary-700">
         Expenses in {range.filterText.toLocaleLowerCase()}
       </h2>
+      <p className="text-xl">Total: {analyticsDashboard.totalCosts}$</p>
       <TimePeriodExpensesChart analyticsDashboardData={analyticsDashboard} />
     </AnalyticsComponentContainer>
   );

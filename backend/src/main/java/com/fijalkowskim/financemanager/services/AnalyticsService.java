@@ -31,7 +31,6 @@ public class AnalyticsService {
         LocalDateTime startDate = endDate.minusDays(days).withHour(0).withMinute(0).withSecond(0);
         LocalDateTime previousStartDate = startDate.minusDays(days).withHour(0).withMinute(0).withSecond(0);
         LocalDateTime previousEndDate = startDate.minusSeconds(1);
-
         DailyAnalyticsData dailyAnalyticsData = new DailyAnalyticsData(getBaseAnalyticsData(startDate,endDate,previousStartDate,previousEndDate,category));
 
         dailyAnalyticsData.setCostsPerDate(calculateCostsPerDate(startDate,endDate,category));
@@ -46,7 +45,6 @@ public class AnalyticsService {
         LocalDateTime previousEndDate =  endDate.minusYears(1);
 
         AnnualAnalyticsData annualAnalyticsData = new AnnualAnalyticsData(getBaseAnalyticsData(startDate,endDate,previousStartDate,previousEndDate,category));
-
         annualAnalyticsData.setCostsPerMonth(calculateCostsPerMonth(startDate,endDate,category));
         annualAnalyticsData.setPreviousCostsPerMonth(calculateCostsPerMonth(previousStartDate, previousEndDate,category));
 
@@ -61,6 +59,8 @@ public class AnalyticsService {
         AnalyticsData analyticsData = new AnalyticsData();
         analyticsData.setStartDate(startDate);
         analyticsData.setEndDate(endDate);
+        analyticsData.setPreviousStartDate(previousStartDate);
+        analyticsData.setPreviousEndDate(previousEndDate);
 
         double totalCosts, totalPreviousCosts;
         if(category.isEmpty()) {

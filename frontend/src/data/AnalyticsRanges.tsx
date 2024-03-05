@@ -6,7 +6,7 @@ export const last7days: AnalyticsRangeData = {
   apiParam: "days/7",
   daysBack: 7,
   dataType: AnalyticsDataType.daily,
-  comparedToPreviousText: "previous 7 days",
+  comparedToPreviousText: "Previous 7 days",
 };
 
 export const last30days: AnalyticsRangeData = {
@@ -14,7 +14,7 @@ export const last30days: AnalyticsRangeData = {
   apiParam: "days/30",
   daysBack: 30,
   dataType: AnalyticsDataType.daily,
-  comparedToPreviousText: "previous 30 days",
+  comparedToPreviousText: "Previous 30 days",
 };
 
 export const last90days: AnalyticsRangeData = {
@@ -22,7 +22,7 @@ export const last90days: AnalyticsRangeData = {
   apiParam: "days/90",
   daysBack: 90,
   dataType: AnalyticsDataType.daily,
-  comparedToPreviousText: "previous 90 days",
+  comparedToPreviousText: "Previous 90 days",
 };
 
 export const analyticsRanges: AnalyticsRangeData[] = [

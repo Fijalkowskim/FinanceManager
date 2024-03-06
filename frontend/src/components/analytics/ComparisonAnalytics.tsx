@@ -2,7 +2,8 @@ import React from "react";
 import AnalyticsComponentContainer from "./AnalyticsComponentContainer";
 import { AnalyticsData } from "../../models/analytics/AnalyticsData";
 import { useAnalyticsContext } from "../../context/AnalyticsContext";
-import ComparisonChart from "../charts/ComparisonChart";
+import TimePeriodExpensesChart from "../charts/TimePeriodExpensesChart";
+import useTimeComparedExpenses from "../../hooks/useComparedExpenses";
 
 type Props = {
   analyticsDashboard: AnalyticsData;
@@ -10,6 +11,7 @@ type Props = {
 
 export default function ComparisonAnalytics({ analyticsDashboard }: Props) {
   const { range } = useAnalyticsContext();
+  const { dailyData, annualData } = useTimeComparedExpenses(analyticsDashboard);
   return (
     <AnalyticsComponentContainer className=" justify-start p-2 gap-1">
       <h2 className="text-xl lg:text-2xl text-primary-700">
@@ -18,7 +20,11 @@ export default function ComparisonAnalytics({ analyticsDashboard }: Props) {
       <p className="text-xl">
         {analyticsDashboard.comparedToPreviousCosts} costs
       </p>
-      <ComparisonChart analyticsDashboardData={analyticsDashboard} />
+      <TimePeriodExpensesChart
+        dailyData={dailyData}
+        annualData={annualData}
+        legendVisible
+      />
     </AnalyticsComponentContainer>
   );
 }

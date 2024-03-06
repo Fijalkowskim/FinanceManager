@@ -1,4 +1,5 @@
 import { ClassValue, clsx } from "clsx";
+import { differenceInDays } from "date-fns";
 import { twMerge } from "tailwind-merge";
 
 export const monthNames = [
@@ -35,4 +36,16 @@ export const dateToMonthName = (date: Date) => {
 };
 export const monthIndexToName = (index: number) => {
   return monthNames[index];
+};
+export const generateDaysArray = (startDate: Date, endDate: Date): Date[] => {
+  return Array.from(
+    {
+      length: differenceInDays(endDate, startDate) + 1,
+    },
+    (_, index) => {
+      const date = new Date(startDate);
+      date.setDate(startDate.getDate() + index);
+      return date;
+    }
+  );
 };

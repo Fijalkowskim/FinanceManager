@@ -7,8 +7,8 @@ import CustomButton from "../general/CustomButton";
 import { NavLink } from "react-router-dom";
 import { GetCategoryData } from "../../data/Categories";
 
-function MontlyExpenses() {
-  const { GetMontlyExpenses, GetMontlyDashbord } = useExpensesContext();
+function MonthlyExpenses() {
+  const { GetMonthlyDashbord: GetMontlyDashbord } = useExpensesContext();
   const [dashboardData, setDashboardData] = useState<DashboardData>();
   const [date] = useState(new Date());
   useEffect(() => {
@@ -17,7 +17,7 @@ function MontlyExpenses() {
       setDashboardData(data);
     };
     LoadExpenses();
-  }, [GetMontlyExpenses, GetMontlyDashbord, setDashboardData, date]);
+  }, [GetMontlyDashbord, setDashboardData, date]);
   return (
     <div className="flex flex-col items-center justify-center p-3 bg-background-50 rounded-md shadow-md max-w-full text-center">
       <h1 className="text-4xl  ">Your monthly spendings</h1>
@@ -72,4 +72,4 @@ function MontlyExpenses() {
   );
 }
 
-export default MontlyExpenses;
+export default MonthlyExpenses;

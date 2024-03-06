@@ -14,12 +14,11 @@ interface ExpensesContextProviderProps {
   children: ReactNode;
 }
 interface ExpensesContextProps {
-  GetMontlyDashbord: (date: Date) => Promise<DashboardData | undefined>;
+  GetMonthlyDashbord: (date: Date) => Promise<DashboardData | undefined>;
   GetPlannedExpensesDashboard: (
     daysFromNow: number,
     amount: number
   ) => Promise<PlannedExpensesData>;
-  GetMontlyExpenses: (date: Date) => Promise<ExpenseData[]>;
   GetExpense: (
     id: number,
     type: ExpenseType
@@ -52,31 +51,7 @@ export function useExpensesContext() {
 export function ExpensesContextProvider({
   children,
 }: ExpensesContextProviderProps) {
-  const GetMontlyExpenses = async (date: Date): Promise<ExpenseData[]> => {
-    try {
-      const res = await api.get(
-        `/expenses/monthly?year=${date.getFullYear()}&month=${
-          date.getMonth() + 1
-        }&pageSize=31`
-      );
-      if (res.data.content) {
-        const expenses: ExpenseData[] = (
-          res.data.content as ExpenseResponseData[]
-        ).map((data) => ({
-          id: data.id,
-          category: data.category,
-          description: data.description,
-          date: new Date(data.date),
-          cost: data.cost,
-        }));
-        return expenses;
-      }
-    } catch (err) {
-      console.log(err);
-    }
-    return [];
-  };
-  const GetMontlyDashbord = async (
+  const GetMonthlyDashbord = async (
     date: Date
   ): Promise<DashboardData | undefined> => {
     try {
@@ -302,8 +277,7 @@ export function ExpensesContextProvider({
   return (
     <ExpensesContext.Provider
       value={{
-        GetMontlyExpenses,
-        GetMontlyDashbord,
+        GetMonthlyDashbord,
         AddExpense,
         GetExpenses,
         GetExpense,

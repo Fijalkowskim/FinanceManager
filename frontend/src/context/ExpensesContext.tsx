@@ -77,7 +77,8 @@ export function ExpensesContextProvider({
     if (pageSize === 0) return { paginatedExpenses: [], totalPages: 0 };
     const totalExpenses = expenses.length;
     const totalPages = Math.ceil(totalExpenses / pageSize);
-    const startIndex = page * pageSize;
+    const correctedPage = page >= 0 && page < totalPages ? page : 0;
+    const startIndex = correctedPage * pageSize;
     const endIndex = startIndex + pageSize;
     const paginatedExpenses = expenses.slice(startIndex, endIndex);
 
@@ -189,6 +190,7 @@ export function ExpensesContextProvider({
   ): Promise<AllExpensesResponseData> => {
     let data =
       type === ExpenseType.normal ? savedExpenses : savedPlannedExpenses;
+
     let expenses: ExpenseData[] = [...data];
 
     if (category !== undefined && category !== "All" && category !== "") {

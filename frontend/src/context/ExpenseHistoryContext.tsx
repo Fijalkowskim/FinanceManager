@@ -1,6 +1,7 @@
 import { ReactNode, createContext, useContext, useState } from "react";
 import { SortType } from "../models/filtering/SortType";
 import { ExpenseData } from "../models/expenses/ExpenseData";
+import { useExpensesContext } from "./ExpensesContext";
 
 const ExpenseHistoryContext = createContext({} as ExpenseHistoryContextProps);
 

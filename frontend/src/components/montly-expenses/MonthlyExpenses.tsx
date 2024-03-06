@@ -7,7 +7,7 @@ import CustomButton from "../general/CustomButton";
 import { NavLink } from "react-router-dom";
 import { GetCategoryData } from "../../data/Categories";
 
-function MontlyExpenses() {
+function MonthlyExpenses() {
   const { GetMonthlyDashbord } = useExpensesContext();
   const [dashboardData, setDashboardData] = useState<DashboardData>();
   const [date] = useState(new Date());
@@ -72,4 +72,4 @@ function MontlyExpenses() {
   );
 }
 
-export default MontlyExpenses;
+export default MonthlyExpenses;

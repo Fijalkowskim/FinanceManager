@@ -1,4 +1,11 @@
-import { ReactNode, createContext, useContext } from "react";
+import {
+  ReactNode,
+  createContext,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
 import { ExpenseData } from "../models/expenses/ExpenseData";
 import api from "../api/api";
 import { ExpenseResponseData } from "../models/expenses/ExpenseResponseData";
@@ -10,8 +17,13 @@ import dateFormat from "dateformat";
 import { ResponseStatusData } from "../models/api/ResponseStatusData";
 import { ExpenseType } from "../models/expenses/ExpenseType";
 import { PlannedExpensesData } from "../models/expenses/PlannedExpensesData";
-import { DemoExpenses } from "../demo-data/DemoExpenses";
+import { DemoExpenses, GetNewExpenseId } from "../demo-data/DemoExpenses";
 import { DemoPlannedExpenses } from "../demo-data/DemoPlannedExpenses";
+import exp from "constants";
+
+import { useDispatch, useSelector } from "react-redux";
+import { RootState } from "../redux/store";
+import { addExpense, updateExpense, deleteExpense } from "../redux/store";
 interface ExpensesContextProviderProps {
   children: ReactNode;
 }
@@ -53,84 +65,121 @@ export function useExpensesContext() {
 export function ExpensesContextProvider({
   children,
 }: ExpensesContextProviderProps) {
+  const dispatch = useDispatch();
+  const { savedExpenses, savedPlannedExpenses } = useSelector(
+    (state: RootState) => state
+  );
+
   const GetPaginationData = (
     expenses: ExpenseData[],
     page: number,
     pageSize: number
   ): { paginatedExpenses: ExpenseData[]; totalPages: number } => {
+    if (pageSize === 0) return { paginatedExpenses: [], totalPages: 0 };
     const totalExpenses = expenses.length;
     const totalPages = Math.ceil(totalExpenses / pageSize);
-    const startIndex = (page - 1) * pageSize;
+    const startIndex = page * pageSize;
     const endIndex = startIndex + pageSize;
     const paginatedExpenses = expenses.slice(startIndex, endIndex);
+
     return { paginatedExpenses: paginatedExpenses, totalPages: totalPages };
   };
+  function padZero(value: number) {
+    return value < 10 ? `0${value}` : value;
+  }
+  function formatDateForSQL(date: Date) {
+    const year = date.getFullYear();
+    const month = padZero(date.getMonth() + 1);
+    const day = padZero(date.getDate());
+    const hours = padZero(date.getHours());
+    const minutes = padZero(date.getMinutes());
+    const seconds = padZero(date.getSeconds());
 
+    return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+  }
   const GetMonthlyDashbord = async (
     date: Date
   ): Promise<DashboardData | undefined> => {
-    try {
-      const res = await api.get(
-        `/expenses/dashboard?year=${date.getFullYear()}&month=${
-          date.getMonth() + 1
-        }`
+    const data = savedExpenses;
+
+    const filteredData = data.filter((expense) => {
+      const expenseDate = new Date(expense.date);
+      return (
+        expenseDate.getFullYear() === date.getFullYear() &&
+        expenseDate.getMonth() === date.getMonth()
       );
-      if (res.data) {
-        const dashboard: DashboardData = {
-          monthlySpending: res.data.monthlySpending,
-          topCategory: {
-            category: res.data.categoriesAnalytics.topCategory.category,
-            cost: res.data.categoriesAnalytics.topCategory.cost,
-          },
-          topExpense: res.data.topExpense,
-          costPerCategory: res.data.categoriesAnalytics.costsPerCategory.map(
-            (cost: any) => ({
-              category: cost.category,
-              cost: cost.cost,
-            })
-          ),
-        };
-        return dashboard;
+    });
+
+    const monthlySpending = filteredData.reduce(
+      (total, expense) => total + expense.cost,
+      0
+    );
+
+    const sortedByCategory: { [key: string]: number } = filteredData.reduce(
+      (acc, expense) => {
+        if (!acc[expense.category]) {
+          acc[expense.category] = 0;
+        }
+        acc[expense.category] += expense.cost;
+        return acc;
+      },
+      {} as { [key: string]: number }
+    );
+    const topCategory = Object.entries(sortedByCategory).reduce(
+      (max, [category, cost]) => (cost > max.cost ? { category, cost } : max),
+      { category: "", cost: 0 }
+    );
+    const topExpenseData = filteredData.reduce(
+      (max, expense) => (expense.cost > max.cost ? expense : max),
+      {
+        id: 0,
+        cost: 0,
+        category: "",
+        description: "",
+        date: new Date(),
       }
-    } catch (err) {
-      console.log(err);
-    }
-    return undefined;
+    );
+    const topExpense: ExpenseResponseData = {
+      id: topExpenseData.id,
+      cost: topExpenseData.cost,
+      description: topExpenseData.description,
+      category: topExpenseData.category,
+      date: formatDateForSQL(topExpenseData.date),
+    };
+
+    const costPerCategory = Object.entries(sortedByCategory).map(
+      ([category, cost]) => ({ category, cost })
+    );
+    const retVal: DashboardData = {
+      monthlySpending,
+      topCategory,
+      topExpense,
+      costPerCategory,
+    };
+    return retVal;
   };
   const AddExpense = async (
     expense: ExpenseRequestData,
     type: ExpenseType
   ): Promise<ResponseStatusData> => {
-    const body = {
-      cost: expense.cost,
-      category: expense.category,
-      description: expense.description,
-      date: dateFormat(expense.date, "yyyy-mm-dd hh:MM:ss"),
+    const newExpense: ExpenseData = {
+      id: GetNewExpenseId(),
+      ...expense,
     };
-    try {
-      const res = await api.post(
-        `/${type === ExpenseType.planned ? "planned_expenses" : "expenses"}`,
-        body
-      );
-      return {
-        status: res.status,
-        message: "Expense added",
-      } as ResponseStatusData;
-    } catch (err) {
-      console.log(err);
+    if (type === ExpenseType.normal) {
+      dispatch(addExpense(newExpense));
+      return { status: 200, message: "Expense added" };
     }
-    return {
-      status: 500,
-      message: "Something went wrong",
-    } as ResponseStatusData;
+    dispatch(addExpense(newExpense));
+    return { status: 200, message: "Expense added" };
   };
   const GetExpense = async (
     id: number,
     type: ExpenseType
   ): Promise<ExpenseData | undefined> => {
     return type === ExpenseType.normal
-      ? DemoExpenses.find((exp) => exp.id === id)
-      : DemoPlannedExpenses.find((exp) => exp.id === id);
+      ? savedExpenses.find((exp) => exp.id === id)
+      : savedPlannedExpenses.find((exp) => exp.id === id);
   };
   const GetExpenses = async (
     page: number,
@@ -139,11 +188,12 @@ export function ExpensesContextProvider({
     type: ExpenseType,
     category?: string
   ): Promise<AllExpensesResponseData> => {
-    let data = type === ExpenseType.normal ? DemoExpenses : DemoPlannedExpenses;
-    let expenses: ExpenseData[] = data;
+    let data =
+      type === ExpenseType.normal ? savedExpenses : savedPlannedExpenses;
+    let expenses: ExpenseData[] = [...data];
 
-    if (category) {
-      expenses = data.filter((d) => d.category === category);
+    if (category !== undefined && category !== "All" && category !== "") {
+      expenses = expenses.filter((e) => e.category === category);
     }
 
     switch (sortType) {
@@ -160,6 +210,7 @@ export function ExpensesContextProvider({
         expenses.sort((a, b) => b.date.getTime() - a.date.getTime());
         break;
     }
+
     const { paginatedExpenses, totalPages } = GetPaginationData(
       expenses,
       page,
@@ -172,82 +223,56 @@ export function ExpensesContextProvider({
     expense: ExpenseRequestData,
     type: ExpenseType
   ): Promise<ResponseStatusData> => {
-    const body = {
-      cost: expense.cost,
-      category: expense.category,
-      description: expense.description,
-      date: dateFormat(expense.date, "yyyy-mm-dd hh:MM:ss"),
+    const newExpense: ExpenseData = {
+      id: id,
+      ...expense,
     };
-    try {
-      const res = await api.put(
-        `/${
-          type === ExpenseType.planned ? "planned_expenses" : "expenses"
-        }/${id}`,
-        body
-      );
-      return {
-        status: res.status,
-        message: "Expense updated",
-      } as ResponseStatusData;
-    } catch (err) {
-      console.log(err);
+
+    if (type === ExpenseType.normal) {
+      dispatch(updateExpense(newExpense));
+      return { status: 200, message: "Expense updated" };
     }
-    return {
-      status: 500,
-      message: "Something went wrong",
-    } as ResponseStatusData;
+
+    dispatch(updateExpense(newExpense));
+    return { status: 200, message: "Expense updated" };
   };
   const GetPlannedExpensesDashboard = async (
     daysFromNow: number,
     amount: number
   ): Promise<PlannedExpensesData> => {
-    try {
-      const res = await api.get(
-        `/planned_expenses/dashboard?daysFromNow=${daysFromNow}&amount=${amount}`
-      );
-      if (res.data) {
-        const expenses: ExpenseData[] = (
-          res.data.plannedExpenses as ExpenseResponseData[]
-        ).map((data) => {
-          return {
-            id: data.id,
-            category: data.category,
-            description: data.description,
-            date: new Date(data.date),
-            cost: data.cost,
-          };
-        });
-        return {
-          plannedExpenses: expenses,
-          totalPlannedExpenses: res.data.totalPlannedExpenses,
-        };
-      }
-    } catch (err) {
-      console.log(err);
-    }
-    return { plannedExpenses: [], totalPlannedExpenses: 0 };
+    const currentDate = new Date();
+
+    const plannedExpensesData = savedPlannedExpenses
+      .filter((expense) => {
+        const expenseDate = new Date(expense.date);
+        const daysDifference = Math.floor(
+          (expenseDate.getTime() - currentDate.getTime()) / (1000 * 3600 * 24)
+        );
+
+        return (
+          daysDifference >= -daysFromNow &&
+          daysDifference <= daysFromNow &&
+          expense.cost <= amount
+        );
+      })
+      .sort((a, b) => a.date.getTime() - b.date.getTime());
+
+    return {
+      plannedExpenses: plannedExpensesData,
+      totalPlannedExpenses: plannedExpensesData.length,
+    };
   };
   const DeleteExpense = async (
     id: number,
     type: ExpenseType
   ): Promise<ResponseStatusData> => {
-    try {
-      const res = await api.delete(
-        `/${
-          type === ExpenseType.planned ? "planned_expenses" : "expenses"
-        }/${id}`
-      );
-      return {
-        status: res.status,
-        message: "Expense deleted",
-      } as ResponseStatusData;
-    } catch (err) {
-      console.log(err);
+    if (type === ExpenseType.normal) {
+      dispatch(deleteExpense(id));
+      return { status: 200, message: "Expense deleted" };
     }
-    return {
-      status: 500,
-      message: "Cannot delete expense",
-    } as ResponseStatusData;
+
+    dispatch(deleteExpense(id));
+    return { status: 200, message: "Expense deleted" };
   };
   const PayPlannedExpense = async (id: number): Promise<ResponseStatusData> => {
     try {
@@ -264,19 +289,30 @@ export function ExpensesContextProvider({
       message: "Cannot pay expense",
     } as ResponseStatusData;
   };
+  const contextValue = useMemo(
+    () => ({
+      GetMonthlyDashbord,
+      AddExpense,
+      GetExpenses,
+      GetExpense,
+      UpdateExpense,
+      GetPlannedExpensesDashboard,
+      DeleteExpense,
+      PayPlannedExpense,
+    }),
+    [
+      GetMonthlyDashbord,
+      AddExpense,
+      GetExpenses,
+      GetExpense,
+      UpdateExpense,
+      GetPlannedExpensesDashboard,
+      DeleteExpense,
+      PayPlannedExpense,
+    ]
+  );
   return (
-    <ExpensesContext.Provider
-      value={{
-        GetMonthlyDashbord,
-        AddExpense,
-        GetExpenses,
-        GetExpense,
-        UpdateExpense,
-        GetPlannedExpensesDashboard,
-        DeleteExpense,
-        PayPlannedExpense,
-      }}
-    >
+    <ExpensesContext.Provider value={contextValue}>
       {children}
     </ExpensesContext.Provider>
   );

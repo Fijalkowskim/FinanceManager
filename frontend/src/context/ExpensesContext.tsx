@@ -13,17 +13,11 @@ import { DashboardData } from "../models/analytics/DashboardData";
 import { SortType } from "../models/filtering/SortType";
 import { AllExpensesResponseData } from "../models/expenses/AllExpensesResponseData";
 import { ExpenseRequestData } from "../models/expenses/ExpenseRequestData";
-import dateFormat from "dateformat";
 import { ResponseStatusData } from "../models/api/ResponseStatusData";
 import { ExpenseType } from "../models/expenses/ExpenseType";
 import { PlannedExpensesData } from "../models/expenses/PlannedExpensesData";
 import { DemoExpenses, GetNewExpenseId } from "../demo-data/DemoExpenses";
 import { DemoPlannedExpenses } from "../demo-data/DemoPlannedExpenses";
-import exp from "constants";
-
-import { useDispatch, useSelector } from "react-redux";
-import { RootState } from "../redux/store";
-import { addExpense, updateExpense, deleteExpense } from "../redux/store";
 interface ExpensesContextProviderProps {
   children: ReactNode;
 }
@@ -65,10 +59,10 @@ export function useExpensesContext() {
 export function ExpensesContextProvider({
   children,
 }: ExpensesContextProviderProps) {
-  const dispatch = useDispatch();
-  const { savedExpenses, savedPlannedExpenses } = useSelector(
-    (state: RootState) => state
-  );
+  const [savedExpenses, setSavedExpenses] =
+    useState<ExpenseData[]>(DemoExpenses);
+  const [savedPlannedExpenses, setSavedPlannedExpenses] =
+    useState<ExpenseData[]>(DemoPlannedExpenses);
 
   const GetPaginationData = (
     expenses: ExpenseData[],
@@ -167,10 +161,10 @@ export function ExpensesContextProvider({
       ...expense,
     };
     if (type === ExpenseType.normal) {
-      dispatch(addExpense(newExpense));
+      setSavedExpenses((prev) => [...prev, newExpense]);
       return { status: 200, message: "Expense added" };
     }
-    dispatch(addExpense(newExpense));
+    setSavedPlannedExpenses((prev) => [...prev, newExpense]);
     return { status: 200, message: "Expense added" };
   };
   const GetExpense = async (
@@ -229,11 +223,15 @@ export function ExpensesContextProvider({
     };
 
     if (type === ExpenseType.normal) {
-      dispatch(updateExpense(newExpense));
+      setSavedExpenses((prev) =>
+        prev.map((e) => (e.id === id ? newExpense : e))
+      );
       return { status: 200, message: "Expense updated" };
     }
 
-    dispatch(updateExpense(newExpense));
+    setSavedPlannedExpenses((prev) =>
+      prev.map((e) => (e.id === id ? newExpense : e))
+    );
     return { status: 200, message: "Expense updated" };
   };
   const GetPlannedExpensesDashboard = async (
@@ -267,11 +265,11 @@ export function ExpensesContextProvider({
     type: ExpenseType
   ): Promise<ResponseStatusData> => {
     if (type === ExpenseType.normal) {
-      dispatch(deleteExpense(id));
+      setSavedExpenses((prev) => prev.filter((e) => e.id !== id));
       return { status: 200, message: "Expense deleted" };
     }
 
-    dispatch(deleteExpense(id));
+    setSavedPlannedExpenses((prev) => prev.filter((e) => e.id !== id));
     return { status: 200, message: "Expense deleted" };
   };
   const PayPlannedExpense = async (id: number): Promise<ResponseStatusData> => {

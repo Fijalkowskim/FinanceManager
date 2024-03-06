@@ -7,6 +7,13 @@ import { AnalyticsDataType } from "../models/analytics/AnalyticsDataType";
 import { AnnualAnalyticsData } from "../models/analytics/AnnualAnalyticsData";
 import { DashboardData } from "../models/analytics/DashboardData";
 import { DailyAnalyticsData } from "../models/analytics/DailyAnalyticsData";
+import { useExpensesContext } from "./ExpensesContext";
+import { Demo7daysAnalytics } from "../demo-data/Demo7daysAnalytics";
+import { Demo2022Analytics } from "../demo-data/Demo2022Analytics";
+import { Demo2023Analytics } from "../demo-data/Demo2023Analytics";
+import { Demo2024Analytics } from "../demo-data/Demo2024Analytics";
+import { Demo90daysAnalytics } from "../demo-data/Demo90daysAnalytics";
+import { Demo30daysAnalytics } from "../demo-data/Demo30daysAnalytics";
 const AnalyticsContext = createContext({} as AnalyticsContextProps);
 export function useAnalyticsContext() {
   return useContext(AnalyticsContext);
@@ -29,6 +36,8 @@ export function AnalyticsContextProvider({
 }) {
   const [category, setCategory] = useState("All");
   const [range, setRange] = useState<AnalyticsRangeData>(last7days);
+  const { savedExpenses } = useExpensesContext();
+
   const setRangeByString = (rangeText: string) => {
     const found = analyticsRanges.find((r) => r.filterText === rangeText);
     if (found) setRange(found);
@@ -45,63 +54,22 @@ export function AnalyticsContextProvider({
       } catch (err) {}
   };
   const getYearsWithExpenses = async (): Promise<number[]> => {
-    try {
-      const res = await api.get("/analytics/yearsWithExpenses");
-      if (res.data) {
-        return res.data as number[];
-      }
-    } catch (err) {
-      console.log(err);
-    }
-    return [];
+    return [2024, 2023, 2022];
   };
   const LoadAnalytics = async (): Promise<AnalyticsData | undefined> => {
-    try {
-      const res = await api.get(
-        `/analytics/${range.apiParam}?category=${
-          category === "All" ? "" : category
-        }`
-      );
-      const data = res.data;
-      if (data) {
-        const baseAnalyticsData: AnalyticsData = {
-          dataType: range.dataType,
-          startDate: new Date(data.startDate),
-          endDate: new Date(data.endDate),
-          previousStartDate: new Date(data.previousStartDate),
-          previousEndDate: new Date(data.previousEndDate),
-          totalCosts: data.totalCosts,
-          totalPreviousCosts: data.totalPreviousCosts,
-          comparedToPreviousCosts: data.comparedToPreviousCosts,
-          costsPerCategory: data.categoriesAnalytics?.costsPerCategory,
-          topCategory: data.categoriesAnalytics?.topCategory,
-        };
-        if (range.dataType === AnalyticsDataType.annual) {
-          const annualAnalyticsData: AnnualAnalyticsData = {
-            ...baseAnalyticsData,
-            costsPerMonth: data.costsPerMonth,
-            previousCostsPerMonth: data.previousCostsPerMonth,
-          };
-          return annualAnalyticsData;
-        } else if (range.dataType === AnalyticsDataType.daily) {
-          const dailyAnalyticsData: DailyAnalyticsData = {
-            ...baseAnalyticsData,
-            costsPerDate: data.costsPerDate.map((item: any) => ({
-              cost: item.cost,
-              date: new Date(item.date),
-            })),
-            previousCostsPerDate: data.previousCostsPerDate.map(
-              (item: any) => ({
-                cost: item.cost,
-                date: new Date(item.date),
-              })
-            ),
-          };
-          return dailyAnalyticsData;
-        }
-      }
-    } catch (err) {
-      console.log(err);
+    switch (range.filterText.toLowerCase()) {
+      case "last 7 days":
+        return Demo7daysAnalytics;
+      case "last 30 days":
+        return Demo30daysAnalytics;
+      case "last 90 days":
+        return Demo90daysAnalytics;
+      case "2024":
+        return Demo2024Analytics;
+      case "2023":
+        return Demo2023Analytics;
+      case "2022":
+        return Demo2022Analytics;
     }
     return undefined;
   };

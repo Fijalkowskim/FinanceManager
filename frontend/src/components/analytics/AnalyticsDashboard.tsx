@@ -13,6 +13,11 @@ function AnalyticsDashboard() {
   return (
     <div className="flex items-center justify-start flex-col gap-6 lg:max-w-2xl w-full mx-auto overflow-hidden">
       <AnalyticsFilter />
+      <h1 className="p-1 rounded-md shadow-sm bg-action-400">
+        Please note that in the demo version the analytics data presented here
+        is simulated for demonstration purposes and not dynamically calculated.
+        The category filtering feature is disabled in this demo.
+      </h1>
       {analyticsDashboard !== undefined ? (
         <>
           <TimePeriodExpenses

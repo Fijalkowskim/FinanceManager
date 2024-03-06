@@ -18,6 +18,7 @@ import { ExpenseType } from "../models/expenses/ExpenseType";
 import { PlannedExpensesData } from "../models/expenses/PlannedExpensesData";
 import { DemoExpenses, GetNewExpenseId } from "../demo-data/DemoExpenses";
 import { DemoPlannedExpenses } from "../demo-data/DemoPlannedExpenses";
+import { subDays } from "date-fns";
 interface ExpensesContextProviderProps {
   children: ReactNode;
 }
@@ -49,6 +50,10 @@ interface ExpensesContextProps {
   ) => Promise<ResponseStatusData>;
   DeleteExpense: (id: number, type: ExpenseType) => Promise<ResponseStatusData>;
   PayPlannedExpense: (id: number) => Promise<ResponseStatusData>;
+  savedExpenses: ExpenseData[];
+  setSavedExpenses: React.Dispatch<React.SetStateAction<ExpenseData[]>>;
+  savedPlannedExpenses: ExpenseData[];
+  setSavedPlannedExpenses: React.Dispatch<React.SetStateAction<ExpenseData[]>>;
 }
 const ExpensesContext = createContext({} as ExpensesContextProps);
 
@@ -241,18 +246,7 @@ export function ExpensesContextProvider({
     const currentDate = new Date();
 
     const plannedExpensesData = savedPlannedExpenses
-      .filter((expense) => {
-        const expenseDate = new Date(expense.date);
-        const daysDifference = Math.floor(
-          (expenseDate.getTime() - currentDate.getTime()) / (1000 * 3600 * 24)
-        );
-
-        return (
-          daysDifference >= -daysFromNow &&
-          daysDifference <= daysFromNow &&
-          expense.cost <= amount
-        );
-      })
+      .filter((expense) => subDays(expense.date, daysFromNow) <= currentDate)
       .sort((a, b) => a.date.getTime() - b.date.getTime());
 
     return {
@@ -268,47 +262,37 @@ export function ExpensesContextProvider({
       setSavedExpenses((prev) => prev.filter((e) => e.id !== id));
       return { status: 200, message: "Expense deleted" };
     }
-
     setSavedPlannedExpenses((prev) => prev.filter((e) => e.id !== id));
     return { status: 200, message: "Expense deleted" };
   };
   const PayPlannedExpense = async (id: number): Promise<ResponseStatusData> => {
-    try {
-      const res = await api.delete(`/planned_expenses/pay/${id}`);
+    const found = savedPlannedExpenses.find((e) => e.id === id);
+    if (!found)
       return {
-        status: res.status,
-        message: "Expense paid",
+        status: 500,
+        message: "Cannot pay expense",
       } as ResponseStatusData;
-    } catch (err) {
-      console.log(err);
-    }
+    setSavedPlannedExpenses((prev) => prev.filter((e) => e.id !== id));
+    setSavedExpenses((prev) => [...prev, { ...found, id: GetNewExpenseId() }]);
     return {
-      status: 500,
-      message: "Cannot pay expense",
+      status: 200,
+      message: "Expense paid",
     } as ResponseStatusData;
   };
-  const contextValue = useMemo(
-    () => ({
-      GetMonthlyDashbord,
-      AddExpense,
-      GetExpenses,
-      GetExpense,
-      UpdateExpense,
-      GetPlannedExpensesDashboard,
-      DeleteExpense,
-      PayPlannedExpense,
-    }),
-    [
-      GetMonthlyDashbord,
-      AddExpense,
-      GetExpenses,
-      GetExpense,
-      UpdateExpense,
-      GetPlannedExpensesDashboard,
-      DeleteExpense,
-      PayPlannedExpense,
-    ]
-  );
+  const contextValue = {
+    GetMonthlyDashbord,
+    AddExpense,
+    GetExpenses,
+    GetExpense,
+    UpdateExpense,
+    GetPlannedExpensesDashboard,
+    DeleteExpense,
+    PayPlannedExpense,
+    savedExpenses,
+    setSavedExpenses,
+    savedPlannedExpenses,
+    setSavedPlannedExpenses,
+  };
   return (
     <ExpensesContext.Provider value={contextValue}>
       {children}

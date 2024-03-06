@@ -3,7 +3,7 @@ import { categories } from "../../data/Categories";
 import CustomButton from "../general/CustomButton";
 import { useExpensesContext } from "../../context/ExpensesContext";
 import { motion } from "framer-motion";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { ResponseStatusData } from "../../models/api/ResponseStatusData";
 import { usePopupContext } from "../../context/PopupContext";
 import { ExpenseType } from "../../models/expenses/ExpenseType";
@@ -17,13 +17,19 @@ function AddExpenseForm({ planned, edit, editId }: Props) {
   const [cost, setCost] = useState("");
   const [description, setDescription] = useState("");
   const [category, setCategory] = useState(categories[0].name);
-
   const [date, setDate] = useState(new Date());
 
   const navigate = useNavigate();
   const { AddExpense, GetExpense, UpdateExpense } = useExpensesContext();
 
   const { setErrorMessage, setInfoMessage, clearMessages } = usePopupContext();
+
+  useEffect(() => {
+    setCost("");
+    setCategory(categories[0].name);
+    setDescription("");
+    setDate(new Date());
+  }, []);
 
   useEffect(() => {
     const loadExpense = async () => {
@@ -136,7 +142,9 @@ function AddExpenseForm({ planned, edit, editId }: Props) {
         required
         type="date"
         value={date.toISOString().split("T")[0]}
-        min={planned ? new Date().toISOString().split("T")[0] : undefined}
+        min={
+          planned && !edit ? new Date().toISOString().split("T")[0] : undefined
+        }
         max={!planned ? new Date().toISOString().split("T")[0] : undefined}
         onChange={(e) => {
           clearMessages();

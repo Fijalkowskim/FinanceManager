@@ -5,7 +5,7 @@ import { IoIosFitness } from "react-icons/io";
 
 function Footer() {
   return (
-    <div className="flex flex-col items-center justify-center gap-2 bg-background-50 p-2 text-primary-950 shadow-lg">
+    <div className="flex flex-col items-center justify-center gap-2 bg-background-50 p-2 text-primary-950 shadow-lg w-screen">
       <div className="flex w-full flex-row items-center justify-center gap-4 text-center text-2xl">
         <div className="h-[0.1px] flex-grow bg-primary-600/30" />
         <div className="flex flex-col items-center justify-center pointer-events-none">

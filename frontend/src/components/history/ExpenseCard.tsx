@@ -4,7 +4,7 @@ import { GetCategoryData } from "../../data/Categories";
 import dateFormat from "dateformat";
 import { AnimatePresence, motion } from "framer-motion";
 import CustomButton from "../general/CustomButton";
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import { useExpensesContext } from "../../context/ExpensesContext";
 import { ResponseStatusData } from "../../models/api/ResponseStatusData";
 import { ExpenseType } from "../../models/expenses/ExpenseType";
@@ -21,6 +21,7 @@ const ExpenseCard = forwardRef<HTMLButtonElement, Props>(
     const { setTimeoutMessage } = usePopupContext();
     const { selectedExpense, setSelectedExpense, setDeletedExpense } =
       useExpenseHistoryContext();
+    const navigate = useNavigate();
 
     const onClick = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
       e.stopPropagation();
@@ -99,21 +100,21 @@ const ExpenseCard = forwardRef<HTMLButtonElement, Props>(
               exit={{ opacity: 0 }}
               className="flex lg:flex-row flex-col items-center justify-center gap-1 lg:gap-3"
             >
-              <NavLink
-                to={`/Finance-Manager/${planned ? "edit-planned" : "edit"}/${
-                  expense.id
-                }`}
+              <CustomButton
+                className="lg:w-20 w-14 text-sm lg:text-base"
+                variant={"primary"}
+                onClick={(e) => {
+                  e.stopPropagation();
+
+                  navigate(
+                    `/Finance-Manager/${planned ? "edit-planned" : "edit"}/${
+                      expense.id
+                    }`
+                  );
+                }}
               >
-                <CustomButton
-                  className="lg:w-20 w-14 text-sm lg:text-base"
-                  variant={"primary"}
-                  onClick={(e) => {
-                    e.stopPropagation();
-                  }}
-                >
-                  Edit
-                </CustomButton>
-              </NavLink>
+                Edit
+              </CustomButton>
               <CustomButton
                 className="lg:w-20 w-14 text-sm lg:text-base"
                 onClick={onDelete}

@@ -8,16 +8,16 @@ import { NavLink } from "react-router-dom";
 import { GetCategoryData } from "../../data/Categories";
 
 function MontlyExpenses() {
-  const { GetMontlyExpenses, GetMontlyDashbord } = useExpensesContext();
+  const { GetMonthlyDashbord } = useExpensesContext();
   const [dashboardData, setDashboardData] = useState<DashboardData>();
   const [date] = useState(new Date());
   useEffect(() => {
     const LoadExpenses = async () => {
-      const data = await GetMontlyDashbord(date);
+      const data = await GetMonthlyDashbord(date);
       setDashboardData(data);
     };
     LoadExpenses();
-  }, [GetMontlyExpenses, GetMontlyDashbord, setDashboardData, date]);
+  }, [GetMonthlyDashbord, setDashboardData, date]);
   return (
     <div className="flex flex-col items-center justify-center p-3 bg-background-50 rounded-md shadow-md max-w-full text-center">
       <h1 className="text-4xl  ">Your monthly spendings</h1>

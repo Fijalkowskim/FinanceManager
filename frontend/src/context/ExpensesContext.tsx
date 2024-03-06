@@ -10,16 +10,17 @@ import dateFormat from "dateformat";
 import { ResponseStatusData } from "../models/api/ResponseStatusData";
 import { ExpenseType } from "../models/expenses/ExpenseType";
 import { PlannedExpensesData } from "../models/expenses/PlannedExpensesData";
+import { DemoExpenses } from "../demo-data/DemoExpenses";
+import { DemoPlannedExpenses } from "../demo-data/DemoPlannedExpenses";
 interface ExpensesContextProviderProps {
   children: ReactNode;
 }
 interface ExpensesContextProps {
-  GetMontlyDashbord: (date: Date) => Promise<DashboardData | undefined>;
+  GetMonthlyDashbord: (date: Date) => Promise<DashboardData | undefined>;
   GetPlannedExpensesDashboard: (
     daysFromNow: number,
     amount: number
   ) => Promise<PlannedExpensesData>;
-  GetMontlyExpenses: (date: Date) => Promise<ExpenseData[]>;
   GetExpense: (
     id: number,
     type: ExpenseType
@@ -52,31 +53,20 @@ export function useExpensesContext() {
 export function ExpensesContextProvider({
   children,
 }: ExpensesContextProviderProps) {
-  const GetMontlyExpenses = async (date: Date): Promise<ExpenseData[]> => {
-    try {
-      const res = await api.get(
-        `/expenses/monthly?year=${date.getFullYear()}&month=${
-          date.getMonth() + 1
-        }&pageSize=31`
-      );
-      if (res.data.content) {
-        const expenses: ExpenseData[] = (
-          res.data.content as ExpenseResponseData[]
-        ).map((data) => ({
-          id: data.id,
-          category: data.category,
-          description: data.description,
-          date: new Date(data.date),
-          cost: data.cost,
-        }));
-        return expenses;
-      }
-    } catch (err) {
-      console.log(err);
-    }
-    return [];
+  const GetPaginationData = (
+    expenses: ExpenseData[],
+    page: number,
+    pageSize: number
+  ): { paginatedExpenses: ExpenseData[]; totalPages: number } => {
+    const totalExpenses = expenses.length;
+    const totalPages = Math.ceil(totalExpenses / pageSize);
+    const startIndex = (page - 1) * pageSize;
+    const endIndex = startIndex + pageSize;
+    const paginatedExpenses = expenses.slice(startIndex, endIndex);
+    return { paginatedExpenses: paginatedExpenses, totalPages: totalPages };
   };
-  const GetMontlyDashbord = async (
+
+  const GetMonthlyDashbord = async (
     date: Date
   ): Promise<DashboardData | undefined> => {
     try {
@@ -138,26 +128,9 @@ export function ExpensesContextProvider({
     id: number,
     type: ExpenseType
   ): Promise<ExpenseData | undefined> => {
-    try {
-      const res = await api.get(
-        `/${
-          type === ExpenseType.planned ? "planned_expenses" : "expenses"
-        }/${id}`
-      );
-      if (res.data) {
-        const expense: ExpenseData = {
-          id: res.data.id,
-          category: res.data.category,
-          description: res.data.description,
-          date: new Date(res.data.date),
-          cost: res.data.cost,
-        };
-        return expense;
-      }
-    } catch (err) {
-      console.log(err);
-    }
-    return undefined;
+    return type === ExpenseType.normal
+      ? DemoExpenses.find((exp) => exp.id === id)
+      : DemoPlannedExpenses.find((exp) => exp.id === id);
   };
   const GetExpenses = async (
     page: number,
@@ -166,41 +139,33 @@ export function ExpensesContextProvider({
     type: ExpenseType,
     category?: string
   ): Promise<AllExpensesResponseData> => {
-    try {
-      if (category === "All") category = undefined;
-      const res = await api.get(
-        `/${
-          type === ExpenseType.planned ? "planned_expenses" : "expenses"
-        }?page=${page}&pageSize=${pageSize}${
-          category ? `&category=${category}` : ""
-        }${
-          sortType === SortType.DateAsc
-            ? "&sortDate=asc"
-            : sortType === SortType.DateDesc
-            ? "&sortDate=desc"
-            : sortType === SortType.CostAsc
-            ? "&sortCost=asc"
-            : "&sortCost=desc"
-        }`
-      );
-      if (res.data.content) {
-        const expenses: ExpenseData[] = (
-          res.data.content as ExpenseResponseData[]
-        ).map((data) => {
-          return {
-            id: data.id,
-            category: data.category,
-            description: data.description,
-            date: new Date(data.date),
-            cost: data.cost,
-          };
-        });
-        return { expenses: expenses, totalPages: res.data.totalPages };
-      }
-    } catch (err) {
-      console.log(err);
+    let data = type === ExpenseType.normal ? DemoExpenses : DemoPlannedExpenses;
+    let expenses: ExpenseData[] = data;
+
+    if (category) {
+      expenses = data.filter((d) => d.category === category);
     }
-    return { expenses: [], totalPages: 0 };
+
+    switch (sortType) {
+      case SortType.CostAsc:
+        expenses.sort((a, b) => a.cost - b.cost);
+        break;
+      case SortType.CostDesc:
+        expenses.sort((a, b) => b.cost - a.cost);
+        break;
+      case SortType.DateAsc:
+        expenses.sort((a, b) => a.date.getTime() - b.date.getTime());
+        break;
+      case SortType.DateDesc:
+        expenses.sort((a, b) => b.date.getTime() - a.date.getTime());
+        break;
+    }
+    const { paginatedExpenses, totalPages } = GetPaginationData(
+      expenses,
+      page,
+      pageSize
+    );
+    return { expenses: paginatedExpenses, totalPages };
   };
   const UpdateExpense = async (
     id: number,
@@ -302,8 +267,7 @@ export function ExpensesContextProvider({
   return (
     <ExpensesContext.Provider
       value={{
-        GetMontlyExpenses,
-        GetMontlyDashbord,
+        GetMonthlyDashbord,
         AddExpense,
         GetExpenses,
         GetExpense,
